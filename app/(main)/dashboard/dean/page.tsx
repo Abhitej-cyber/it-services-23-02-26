@@ -371,10 +371,13 @@ export default function DeanDashboard() {
                         <div className="divide-y divide-slate-50">
                             {activeTab === "HOD_DIRECTORY" ? (
                                 hods.length > 0 ? (
-                                    hods.map((hod) => (
+                                    hods.map((hod, index) => (
                                         <div key={hod.id} className="p-8 hover:bg-slate-50/50 transition-all group">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-5">
+                                                    <div className="text-[10px] font-black text-slate-300 w-4">
+                                                        {String(index + 1).padStart(2, '0')}
+                                                    </div>
                                                     <div className="h-14 w-14 bg-green-50 rounded-2xl flex items-center justify-center font-black text-green-600 text-xl border border-green-100">
                                                         {hod.name.charAt(0)}
                                                     </div>
@@ -417,10 +420,13 @@ export default function DeanDashboard() {
                                         ? r.type === "ACCOUNT_APPROVAL"
                                         : r.type !== "ACCOUNT_APPROVAL";
                                     return baseFilter && typeFilter;
-                                }).map((req) => (
+                                }).map((req, index) => (
                                     <div key={req.id} className="p-8 hover:bg-slate-50/50 transition-all group">
                                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                             <div className="flex items-start gap-5">
+                                                <div className="text-[10px] font-black text-slate-300 w-4 mt-4">
+                                                    {String(index + 1).padStart(2, '0')}
+                                                </div>
                                                 <div className="mt-1 p-3 bg-slate-100 rounded-2xl text-slate-600 font-black text-xs uppercase shadow-sm">
                                                     {req.requestNumber.split('-')[2]}
                                                 </div>

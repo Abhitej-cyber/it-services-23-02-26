@@ -204,7 +204,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="divide-y divide-slate-50">
                             {activeQueue === "TICKETS" ? (
-                                filteredTickets.length > 0 ? filteredTickets.slice(0, 5).map((ticket) => (
+                                filteredTickets.length > 0 ? filteredTickets.slice(0, 5).map((ticket, index) => (
                                     <div
                                         key={ticket.id}
                                         className="p-6 hover:bg-slate-50/50 transition-colors group cursor-pointer"
@@ -212,6 +212,9 @@ export default function AdminDashboard() {
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex gap-4">
+                                                <div className="text-[10px] font-black text-slate-300 w-4 mt-1.5">
+                                                    {String(index + 1).padStart(2, '0')}
+                                                </div>
                                                 <div className={`mt-1 h-3 w-3 rounded-full flex-shrink-0 animate-pulse ${ticket.priority === "CRITICAL" ? "bg-red-500" : "bg-emerald-500"
                                                     }`} />
                                                 <div>
@@ -249,13 +252,16 @@ export default function AdminDashboard() {
                                     <div className="p-10 text-center text-slate-500 italic">No requests in the queue</div>
                                 )
                             ) : (
-                                filteredRequests.length > 0 ? filteredRequests.slice(0, 5).map((request) => (
+                                filteredRequests.length > 0 ? filteredRequests.slice(0, 5).map((request, index) => (
                                     <div
                                         key={request.id}
                                         className="p-6 hover:bg-slate-50/50 transition-colors group"
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex gap-4">
+                                                <div className="text-[10px] font-black text-slate-300 w-4 mt-1.5">
+                                                    {String(index + 1).padStart(2, '0')}
+                                                </div>
                                                 <div className={`mt-1 h-3 w-3 rounded-full flex-shrink-0 ${request.priority === "CRITICAL" ? "bg-red-500" : "bg-orange-500"
                                                     }`} />
                                                 <div>

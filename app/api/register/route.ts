@@ -22,9 +22,13 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { email, password, name, role, departmentId, departmentName } = userSchema.parse(body);
 
-        // RBAC: Only DEAN can register someone with a specific role
+        // RBAC: Only DEAN can register someone as ACTIVE with a specialized role
+        // Public registration for HOD/LAB_INCHARGE is allowed but will be set to PENDING
         if (role && role !== "USER") {
-            if (!session || session.user.role !== "DEAN") {
+            const isSelfRegistering = !session || session.user.role !== "DEAN";
+            const allowedPublicRoles = ["HOD", "LAB_INCHARGE"];
+
+            if (isSelfRegistering && !allowedPublicRoles.includes(role)) {
                 return NextResponse.json(
                     { message: "Unauthorized: Only the Dean can register specialized roles" },
                     { status: 403 }
@@ -45,7 +49,7 @@ export async function POST(req: Request) {
 
         const hashedPassword = await hash(password, 10);
         const targetRole = role || "USER";
-        const isApprovalRequired = targetRole === "HOD";
+        const isApprovalRequired = (targetRole === "HOD" || targetRole === "LAB_INCHARGE") && (!session || session.user.role !== "DEAN");
 
         // Handle Department Creation/Assignment
         let finalDeptId = departmentId || null;
@@ -89,7 +93,7 @@ export async function POST(req: Request) {
 
         if (isApprovalRequired) {
             if (!finalDeptId) {
-                return NextResponse.json({ message: "Department is required for HOD registration" }, { status: 400 });
+                return NextResponse.json({ message: "Department is required for specialized role registration" }, { status: 400 });
             }
 
             await db.request.create({

@@ -207,7 +207,7 @@ export default function HODDashboard() {
                         {(Array.isArray(requests) ? requests : [])
                             .filter(r => showHistory ? true : r.status === "PENDING")
                             .slice(0, 5)
-                            .map((req) => (
+                            .map((req, index) => (
                                 <div
                                     key={req.id}
                                     className="p-6 bg-white rounded-3xl border border-slate-100 flex items-center justify-between group hover:shadow-xl hover:shadow-slate-100 transition-all group cursor-pointer"
@@ -217,6 +217,9 @@ export default function HODDashboard() {
                                     }}
                                 >
                                     <div className="flex items-center gap-5">
+                                        <div className="text-[10px] font-black text-slate-300 w-4">
+                                            {String(index + 1).padStart(2, '0')}
+                                        </div>
                                         <div className={`h-12 w-12 rounded-2xl flex items-center justify-center font-bold text-xs ${req.status === "APPROVED" || req.status === "COMPLETED" ? "bg-green-50 text-green-600 border border-green-100" :
                                             req.status === "DECLINED" ? "bg-red-50 text-red-600 border border-red-100" :
                                                 "bg-orange-50 text-orange-600 border border-orange-100"

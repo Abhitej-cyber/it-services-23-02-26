@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
                     department: { select: { name: true, code: true } },
                     lab: { select: { name: true, code: true } },
                 },
-                orderBy: { updatedAt: "desc" },
+                orderBy: { sheetOrder: "asc" },
                 skip,
                 take: limit,
             }),

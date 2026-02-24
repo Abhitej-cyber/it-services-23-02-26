@@ -171,8 +171,13 @@ model Asset {
   purchaseDate  DateTime?
   purchasePrice Float?
   warrantyExpiry DateTime?
+  processor     String?
+  ram           String?
+  hdd           String?
   status        AssetStatus @default(ACTIVE)
   condition     AssetCondition @default(GOOD)
+  sheetOrder    Int?
+  assignment    String?
   departmentId  String
   labId         String?
   location      String?

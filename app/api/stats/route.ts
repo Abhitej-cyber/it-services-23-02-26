@@ -17,42 +17,30 @@ export async function GET(req: NextRequest) {
 
         // Dean - Global stats
         if (role === "DEAN") {
-            let spreadsheetSystems = 0;
-            try {
-                const sheetRes = await fetch("https://docs.google.com/spreadsheets/d/1nCYkK0Y5RGmjHG2X1CyC-ENAVgmufzDxp97fJWC1jTs/export?format=csv", { cache: 'no-store' });
-                const text = await sheetRes.text();
-                // Split by newline and handle potential \r
-                const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
-                if (lines.length > 1) {
-                    spreadsheetSystems = parseInt(lines[1]) || 0;
-                }
-            } catch (error) {
-                console.error("Spreadsheet fetch error:", error);
-            }
-
             const [
-                dbTotalSystems,
+                totalSystemsCount,
                 workingSystems,
-                underMaintenance,
-                priorityIssues,
+                underMaintenanceCount,
+                damagedCount,
+                openMaintenanceTickets,
                 departments,
                 labs,
                 pendingRequests,
             ] = await Promise.all([
-                prisma.asset.count({ where: { type: { in: ["DESKTOP", "LAPTOP"] } } }),
-                prisma.asset.count({ where: { status: "ACTIVE", type: { in: ["DESKTOP", "LAPTOP"] } } }),
-                prisma.asset.count({ where: { status: "UNDER_MAINTENANCE" } }),
-                prisma.ticket.count({ where: { priority: "CRITICAL", status: { not: "RESOLVED" } } }),
+                prisma.asset.count({ where: { type: { in: ["DESKTOP", "LAPTOP", "SERVER"] } } }),
+                prisma.asset.count({ where: { status: "ACTIVE", type: { in: ["DESKTOP", "LAPTOP", "SERVER"] } } }),
+                prisma.asset.count({ where: { status: "UNDER_MAINTENANCE", type: { in: ["DESKTOP", "LAPTOP", "SERVER"] } } }),
+                prisma.asset.count({ where: { status: "DAMAGED", type: { in: ["DESKTOP", "LAPTOP", "SERVER"] } } }),
+                prisma.ticket.count({ where: { status: { not: "RESOLVED" } } }),
                 prisma.department.count(),
                 prisma.lab.count(),
                 prisma.request.count({ where: { status: "PENDING" } }),
             ]);
 
-            const totalSystemsCount = spreadsheetSystems || dbTotalSystems;
-            // Dynamically adjust operational stats based on the total systems count
-            const serviceCount = underMaintenance;
-            const priorityCount = priorityIssues + pendingRequests;
-            const readyCount = Math.max(0, totalSystemsCount - serviceCount - priorityCount);
+            // Balanced calculation: Ready + Service = Total
+            const serviceCount = underMaintenanceCount + damagedCount;
+            const readyCount = workingSystems;
+            const priorityCount = openMaintenanceTickets + pendingRequests;
 
             return NextResponse.json({
                 totalSystems: totalSystemsCount,

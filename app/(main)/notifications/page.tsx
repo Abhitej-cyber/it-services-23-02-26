@@ -30,9 +30,10 @@ export default function NotificationsPage() {
         try {
             const res = await fetch("/api/activities");
             const data = await res.json();
-            setActivities(data);
+            setActivities(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Failed to fetch activities", error);
+            setActivities([]);
         } finally {
             setLoading(false);
         }

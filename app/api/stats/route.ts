@@ -35,11 +35,11 @@ export async function GET(req: NextRequest) {
                 } else {
                     console.error("Google Sheet returned HTML — ensure the sheet is published publicly.");
                     // Fallback to database count
-                    totalSystems = await prisma.asset.count();
+                    totalSystems = 0;
                 }
             } catch (error) {
                 console.error("Error fetching from Google Sheets:", error);
-                totalSystems = await prisma.asset.count();
+                totalSystems = 0;
             }
 
             // Ready for Use, Service, Priority come from the database

@@ -17,13 +17,22 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Modal } from "@/components/ui/modal";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function AdminDashboard() {
     const router = useRouter();
-    const [stats, setStats] = useState<any>(null);
-    const [tickets, setTickets] = useState<any[]>([]);
-    const [requests, setRequests] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+
+
+    const { data: stats, isLoading: loadingStats } = useSWR("/api/stats", fetcher, { revalidateOnFocus: false });
+    const { data: ticketsRaw, mutate: mutateTickets } = useSWR("/api/tickets", fetcher);
+    const { data: requestsRaw, mutate: mutateRequests } = useSWR("/api/requests", fetcher);
+
+    const tickets = Array.isArray(ticketsRaw) ? ticketsRaw : [];
+    const requests = Array.isArray(requestsRaw) ? requestsRaw : [];
+    const loading = loadingStats;
+
     const [search, setSearch] = useState("");
     const [activeQueue, setActiveQueue] = useState<"TICKETS" | "REQUESTS">("TICKETS");
     const [filterPriority, setFilterPriority] = useState<string>("ALL");
@@ -36,33 +45,6 @@ export default function AdminDashboard() {
     const [labCode, setLabCode] = useState("");
     const [labCapacity, setLabCapacity] = useState("");
     const [labLocation, setLabLocation] = useState("");
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const [statsRes, ticketsRes, requestsRes] = await Promise.all([
-                    fetch("/api/stats"),
-                    fetch("/api/tickets"),
-                    fetch("/api/requests")
-                ]);
-
-                const statsData = await statsRes.json();
-                const ticketsData = await ticketsRes.json();
-                const requestsData = await requestsRes.json();
-
-                setStats(statsData);
-                setTickets(Array.isArray(ticketsData) ? ticketsData : []);
-                setRequests(Array.isArray(requestsData) ? requestsData : []);
-            } catch (error) {
-                console.error("Failed to fetch dashboard data:", error);
-                setTickets([]);
-                setRequests([]);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, []);
 
     const handleProcessRequest = async (status: string) => {
         if (!selectedRequest) return;
@@ -81,9 +63,7 @@ export default function AdminDashboard() {
             });
 
             if (res.ok) {
-                const requestsRes = await fetch("/api/requests");
-                const requestsData = await requestsRes.json();
-                setRequests(Array.isArray(requestsData) ? requestsData : []);
+                await mutateRequests();
                 setIsProcessingModalOpen(false);
                 setSelectedRequest(null);
                 setRequestRemarks("");

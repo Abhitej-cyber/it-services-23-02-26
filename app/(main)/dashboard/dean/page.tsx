@@ -31,15 +31,26 @@ import {
 } from "recharts";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function DeanDashboard() {
     const router = useRouter();
-    const [stats, setStats] = useState<any>(null);
-    const [requests, setRequests] = useState<any[]>([]);
-    const [distribution, setDistribution] = useState<any[]>([]);
-    const [admins, setAdmins] = useState<any[]>([]);
-    const [hods, setHods] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+
+    const { data: stats, isLoading: loadingStats } = useSWR("/api/stats", fetcher, { revalidateOnFocus: false });
+    const { data: requestsRaw, mutate: mutateRequests } = useSWR("/api/requests", fetcher);
+    const { data: distributionRaw } = useSWR("/api/analytics/distribution", fetcher, { revalidateOnFocus: false });
+    const { data: adminsRaw } = useSWR("/api/users?role=ADMIN", fetcher, { revalidateOnFocus: false });
+    const { data: hodsRaw, mutate: mutateHods } = useSWR("/api/users?role=HOD", fetcher);
+
+    const requests = Array.isArray(requestsRaw) ? requestsRaw : [];
+    const distribution = Array.isArray(distributionRaw) ? distributionRaw : [];
+    const admins = Array.isArray(adminsRaw) ? adminsRaw : [];
+    const hods = Array.isArray(hodsRaw) ? hodsRaw : [];
+
+    const loading = loadingStats;
+
     const [showHistory, setShowHistory] = useState(false);
 
     // Search & Modals
@@ -50,43 +61,6 @@ export default function DeanDashboard() {
     const [remarks, setRemarks] = useState("");
     const [assignedAdminId, setAssignedAdminId] = useState("");
     const [activeTab, setActiveTab] = useState<"SERVICE" | "ACCOUNT" | "HOD_DIRECTORY">("SERVICE");
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const [statsRes, requestsRes, distRes, adminsRes, hodsRes] = await Promise.all([
-                    fetch("/api/stats"),
-                    fetch("/api/requests"),
-                    fetch("/api/analytics/distribution"),
-                    fetch("/api/users?role=ADMIN"),
-                    fetch("/api/users?role=HOD")
-                ]);
-
-                if (statsRes.ok) setStats(await statsRes.json());
-                if (requestsRes.ok) {
-                    const data = await requestsRes.json();
-                    setRequests(Array.isArray(data) ? data : []);
-                }
-                if (distRes.ok) {
-                    const data = await distRes.json();
-                    setDistribution(Array.isArray(data) ? data : []);
-                }
-                if (adminsRes.ok) {
-                    const data = await adminsRes.json();
-                    setAdmins(Array.isArray(data) ? data : []);
-                }
-                if (hodsRes.ok) {
-                    const data = await hodsRes.json();
-                    setHods(Array.isArray(data) ? data : []);
-                }
-            } catch (error) {
-                console.error("Failed to fetch dashboard data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, []);
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
@@ -114,14 +88,7 @@ export default function DeanDashboard() {
             });
 
             if (res.ok) {
-                const [reqsRes, hodsRes] = await Promise.all([
-                    fetch("/api/requests"),
-                    fetch("/api/users?role=HOD")
-                ]);
-                const reqsData = await reqsRes.json();
-                const hodsData = await hodsRes.json();
-                setRequests(Array.isArray(reqsData) ? reqsData : []);
-                setHods(Array.isArray(hodsData) ? hodsData : []);
+                await Promise.all([mutateRequests(), mutateHods()]);
                 setSelectedRequest(null);
                 setRemarks("");
                 setAssignedAdminId("");
@@ -142,14 +109,7 @@ export default function DeanDashboard() {
             });
 
             if (res.ok) {
-                const [hodsRes, reqsRes] = await Promise.all([
-                    fetch("/api/users?role=HOD"),
-                    fetch("/api/requests")
-                ]);
-                const hodsData = await hodsRes.json();
-                const reqsData = await reqsRes.json();
-                setHods(Array.isArray(hodsData) ? hodsData : []);
-                setRequests(Array.isArray(reqsData) ? reqsData : []);
+                await Promise.all([mutateHods(), mutateRequests()]);
             } else {
                 const error = await res.json();
                 alert(error.error || "Failed to delete user");

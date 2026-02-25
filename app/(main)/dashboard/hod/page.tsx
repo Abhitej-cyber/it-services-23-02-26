@@ -19,15 +19,24 @@ import { useSession } from "next-auth/react";
 import { Modal } from "@/components/ui/modal";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function HODDashboard() {
     const { data: session } = useSession();
     const router = useRouter();
-    const [stats, setStats] = useState<any>(null);
-    const [requests, setRequests] = useState<any[]>([]);
-    const [labs, setLabs] = useState<any[]>([]);
-    const [users, setUsers] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+
+    const { data: stats, isLoading: loadingStats } = useSWR("/api/stats", fetcher, { revalidateOnFocus: false });
+    const { data: requestsRaw, mutate: mutateRequests } = useSWR("/api/requests", fetcher);
+    const { data: labsRaw, mutate: mutateLabs } = useSWR("/api/labs", fetcher, { revalidateOnFocus: false });
+    const { data: usersRaw } = useSWR("/api/users?role=LAB_INCHARGE", fetcher, { revalidateOnFocus: false });
+
+    const requests = Array.isArray(requestsRaw) ? requestsRaw : [];
+    const labs = Array.isArray(labsRaw) ? labsRaw : [];
+    const users = Array.isArray(usersRaw) ? usersRaw : [];
+    const loading = loadingStats;
+
     const [showHistory, setShowHistory] = useState(false);
 
     // Modals
@@ -40,33 +49,6 @@ export default function HODDashboard() {
     const [requestForm, setRequestForm] = useState({ title: "", description: "", type: "NEW_SYSTEM", priority: "NORMAL" });
     const [assignForm, setAssignForm] = useState({ labId: "", inchargeId: "" });
     const [submitting, setSubmitting] = useState(false);
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const [statsRes, requestsRes, labsRes, usersRes] = await Promise.all([
-                    fetch("/api/stats"),
-                    fetch("/api/requests"),
-                    fetch("/api/labs"),
-                    fetch("/api/users?role=LAB_INCHARGE")
-                ]);
-
-                const statsData = await statsRes.json();
-                const requestsData = await requestsRes.json();
-                const labsData = await labsRes.json();
-                const usersData = await usersRes.json();
-                setStats(statsData);
-                setRequests(Array.isArray(requestsData) ? requestsData : []);
-                setLabs(Array.isArray(labsData) ? labsData : []);
-                setUsers(Array.isArray(usersData) ? usersData : []);
-            } catch (error) {
-                console.error("Failed to fetch HOD data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, []);
 
     const handleRaiseRequest = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -92,10 +74,7 @@ export default function HODDashboard() {
                 const data = await res.json();
                 setIsRequestModalOpen(false);
                 setRequestForm({ title: "", description: "", type: "NEW_SYSTEM", priority: "NORMAL" });
-                // Refresh requests
-                const requestsRes = await fetch("/api/requests");
-                const requestsData = await requestsRes.json();
-                setRequests(Array.isArray(requestsData) ? requestsData : []);
+                await mutateRequests();
                 alert(`Success! Request ${data.requestNumber} has been raised.`);
             } else {
                 const errorData = await res.json();
@@ -121,10 +100,7 @@ export default function HODDashboard() {
             if (res.ok) {
                 setIsAssignModalOpen(false);
                 setAssignForm({ labId: "", inchargeId: "" });
-                // Refresh labs
-                const labsRes = await fetch("/api/labs");
-                const labsData = await labsRes.json();
-                setLabs(Array.isArray(labsData) ? labsData : []);
+                await mutateLabs();
             }
         } catch (error) {
             console.error("Failed to assign incharge", error);

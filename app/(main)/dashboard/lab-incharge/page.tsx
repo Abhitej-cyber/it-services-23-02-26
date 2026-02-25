@@ -14,33 +14,16 @@ import {
     Zap,
     Info
 } from "lucide-react";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function LabInchargeDashboard() {
-    const [stats, setStats] = useState<any>(null);
-    const [tickets, setTickets] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data: stats, isLoading: loadingStats } = useSWR("/api/stats", fetcher, { revalidateOnFocus: false });
+    const { data: ticketsRaw } = useSWR("/api/tickets", fetcher);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const [statsRes, ticketsRes] = await Promise.all([
-                    fetch("/api/stats"),
-                    fetch("/api/tickets")
-                ]);
-
-                const statsData = await statsRes.json();
-                const ticketsData = await ticketsRes.json();
-
-                setStats(statsData);
-                setTickets(ticketsData);
-            } catch (error) {
-                console.error("Failed to fetch lab data:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, []);
+    const tickets = Array.isArray(ticketsRaw) ? ticketsRaw : [];
+    const loading = loadingStats;
 
     if (loading) {
         return (

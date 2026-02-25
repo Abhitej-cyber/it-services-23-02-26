@@ -134,9 +134,10 @@ function AssetsContent() {
         setIsSyncing(true);
         try {
             const res = await fetch("/api/assets/sync-sheet", { method: "POST" });
-            const data = await res.json();
+            const data = await res.json().catch(() => ({ error: "Malformatted response from server" }));
+
             if (res.ok) {
-                alert(data.message);
+                alert(data.message || "Sync completed successfully");
                 fetchAssets();
             } else {
                 alert(data.error || "Failed to sync sheet");

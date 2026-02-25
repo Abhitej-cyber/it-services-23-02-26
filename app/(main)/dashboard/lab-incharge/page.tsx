@@ -78,22 +78,27 @@ export default function LabInchargeDashboard() {
             </div>
 
             {/* Lab Health Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: "Lab Inventory", value: stats?.totalSystems || 0, icon: Monitor, color: "text-green-600", bg: "bg-green-50" },
-                    { label: "Optimal Status", value: stats?.workingSystems || 0, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
-                    { label: "Active Requests", value: stats?.pendingTickets || 0, icon: Wrench, color: "text-orange-600", bg: "bg-orange-50" },
-                    { label: "System Health", value: "94%", icon: Zap, color: "text-emerald-600", bg: "bg-emerald-50" },
+                    { label: "Lab Inventory", value: stats?.totalSystems || 0, change: "Live Sync", icon: Monitor, color: "text-blue-600", bg: "bg-blue-50" },
+                    { label: "Optimal Status", value: stats?.workingSystems || 0, change: "Active", icon: CheckCircle2, color: "text-blue-600", bg: "bg-blue-50" },
+                    { label: "Active Requests", value: stats?.pendingTickets || 0, change: "Attention", icon: Wrench, color: "text-orange-500", bg: "bg-orange-50" },
+                    { label: "System Health", value: "94%", change: "Good", icon: Zap, color: "text-green-500", bg: "bg-green-50" },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white p-8 rounded-[40px] shadow-sm border border-slate-100 group hover:border-green-200 transition-all">
-                        <div className={`h-14 w-14 rounded-3xl ${stat.bg} flex items-center justify-center mb-6 shadow-sm`}>
-                            <stat.icon className={`h-7 w-7 ${stat.color}`} />
-                        </div>
-                        <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">{stat.label}</p>
-                        <h3 className="text-4xl font-black text-slate-900 mt-2 tracking-tight">{stat.value}</h3>
-                        <div className="mt-4 flex items-center gap-2 text-[10px] font-black uppercase text-slate-400 tracking-widest">
-                            <Clock className="h-3 w-3" />
-                            Last checked: 2m ago
+                    <div key={i} className="bg-[#f6f9fc] p-6 rounded-3xl border border-slate-100/60 shadow-sm relative group overflow-hidden transition-all hover:shadow-md cursor-pointer">
+                        <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} -mr-8 -mt-8 rounded-full opacity-50 group-hover:scale-110 transition-transform`} />
+                        <div className="relative z-10 flex flex-col gap-5">
+                            <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                            <div>
+                                <p className="text-slate-500 text-sm font-bold">{stat.label}</p>
+                                <div className="flex items-center gap-3 mt-1 text-slate-900">
+                                    <h3 className="text-[32px] leading-none font-black">{stat.value}</h3>
+                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-md text-slate-500 bg-white shadow-sm self-end mb-1">{stat.change}</span>
+                                </div>
+                                <div className="mt-3 flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-slate-400">
+                                    <Clock className="h-3 w-3" /> Last checked: 2m ago
+                                </div>
+                            </div>
                         </div>
                     </div>
                 ))}

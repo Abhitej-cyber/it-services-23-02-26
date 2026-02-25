@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,39 +15,39 @@ datasource db {
 // ============================================
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  name          String
-  password      String
-  role          Role      @default(USER)
-  status        UserStatus @default(ACTIVE)
-  departmentId  String?
-  labId         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String     @id @default(uuid())
+  email        String     @unique
+  name         String
+  password     String
+  role         Role       @default(USER)
+  status       UserStatus @default(ACTIVE)
+  departmentId String?
+  labId        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   // Relations
-  department    Department?  @relation(fields: [departmentId], references: [id])
-  lab           Lab?         @relation(fields: [labId], references: [id])
-  accounts      Account[]
-  sessions      Session[]
-  
+  department Department? @relation(fields: [departmentId], references: [id])
+  lab        Lab?        @relation(fields: [labId], references: [id])
+  accounts   Account[]
+  sessions   Session[]
+
   // HOD Relations
   managedDepartment Department? @relation("HODRelation")
-  
+
   // Lab Incharge Relations
-  managedLab    Lab?        @relation("LabInchargeRelation")
-  
+  managedLab Lab? @relation("LabInchargeRelation")
+
   // Request Relations
-  requestsCreated  Request[]  @relation("RequestCreator")
-  requestsApproved Request[]  @relation("RequestApprover")
-  
+  requestsCreated  Request[] @relation("RequestCreator")
+  requestsApproved Request[] @relation("RequestApprover")
+
   // Ticket Relations
-  ticketsCreated   Ticket[]   @relation("TicketCreator")
-  ticketsAssigned  Ticket[]   @relation("TicketAssignee")
-  
+  ticketsCreated  Ticket[] @relation("TicketCreator")
+  ticketsAssigned Ticket[] @relation("TicketAssignee")
+
   // Activity Logs
-  activityLogs  ActivityLog[]
+  activityLogs ActivityLog[]
 
   @@index([email])
   @@index([role])
@@ -121,33 +121,33 @@ model Department {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  hod         User?    @relation("HODRelation", fields: [hodId], references: [id])
-  labs        Lab[]
-  assets      Asset[]
-  users       User[]
-  requests    Request[]
-  tickets     Ticket[]
+  hod      User?     @relation("HODRelation", fields: [hodId], references: [id])
+  labs     Lab[]
+  assets   Asset[]
+  users    User[]
+  requests Request[]
+  tickets  Ticket[]
 
   @@index([hodId])
 }
 
 model Lab {
-  id            String   @id @default(uuid())
-  name          String
-  code          String   @unique
-  departmentId  String
-  inchargeId    String?  @unique
-  capacity      Int      @default(0)
-  location      String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(uuid())
+  name         String
+  code         String   @unique
+  departmentId String
+  inchargeId   String?  @unique
+  capacity     Int      @default(0)
+  location     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
-  department    Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  incharge      User?      @relation("LabInchargeRelation", fields: [inchargeId], references: [id])
-  assets        Asset[]
-  users         User[]
-  tickets       Ticket[]
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  incharge   User?      @relation("LabInchargeRelation", fields: [inchargeId], references: [id])
+  assets     Asset[]
+  users      User[]
+  tickets    Ticket[]
 
   @@index([departmentId])
   @@index([inchargeId])
@@ -158,37 +158,37 @@ model Lab {
 // ============================================
 
 model Asset {
-  id            String      @id @default(uuid())
-  assetNumber   String      @unique
-  name          String
-  type          AssetType
-  category      String
-  brand         String?
-  model         String?
-  serialNumber  String?     @unique
-  macAddress    String?     @unique
-  specifications String?    @db.Text
-  purchaseDate  DateTime?
-  purchasePrice Float?
+  id             String         @id @default(uuid())
+  assetNumber    String         @unique
+  name           String
+  type           AssetType
+  category       String
+  brand          String?
+  model          String?
+  serialNumber   String?        @unique
+  macAddress     String?        @unique
+  specifications String?        @db.Text
+  purchaseDate   DateTime?
+  purchasePrice  Float?
   warrantyExpiry DateTime?
-  processor     String?
-  ram           String?
-  hdd           String?
-  status        AssetStatus @default(ACTIVE)
-  condition     AssetCondition @default(GOOD)
-  sheetOrder    Int?
-  assignment    String?
-  departmentId  String
-  labId         String?
-  location      String?
-  notes         String?     @db.Text
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  processor      String?
+  ram            String?
+  hdd            String?
+  status         AssetStatus    @default(ACTIVE)
+  condition      AssetCondition @default(GOOD)
+  sheetOrder     Int?
+  assignment     String?
+  departmentId   String
+  labId          String?
+  location       String?
+  notes          String?        @db.Text
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   // Relations
-  department    Department  @relation(fields: [departmentId], references: [id])
-  lab           Lab?        @relation(fields: [labId], references: [id])
-  tickets       Ticket[]
+  department      Department       @relation(fields: [departmentId], references: [id])
+  lab             Lab?             @relation(fields: [labId], references: [id])
+  tickets         Ticket[]
   maintenanceLogs MaintenanceLog[]
 
   @@index([assetNumber])
@@ -235,27 +235,27 @@ enum AssetCondition {
 // ============================================
 
 model Request {
-  id            String        @id @default(uuid())
-  requestNumber String        @unique
-  title         String
-  description   String        @db.Text
-  type          RequestType
-  priority      Priority      @default(NORMAL)
-  status        RequestStatus @default(PENDING)
-  departmentId  String
-  createdById   String
-  approvedById  String?
+  id              String        @id @default(uuid())
+  requestNumber   String        @unique
+  title           String
+  description     String        @db.Text
+  type            RequestType
+  priority        Priority      @default(NORMAL)
+  status          RequestStatus @default(PENDING)
+  departmentId    String
+  createdById     String
+  approvedById    String?
   assignedAdminId String?
-  remarks       String?       @db.Text
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  approvedAt    DateTime?
-  completedAt   DateTime?
+  remarks         String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  approvedAt      DateTime?
+  completedAt     DateTime?
 
   // Relations
-  department    Department @relation(fields: [departmentId], references: [id])
-  createdBy     User       @relation("RequestCreator", fields: [createdById], references: [id], onDelete: Cascade)
-  approvedBy    User?      @relation("RequestApprover", fields: [approvedById], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  createdBy  User       @relation("RequestCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  approvedBy User?      @relation("RequestApprover", fields: [approvedById], references: [id])
 
   @@index([requestNumber])
   @@index([status])
@@ -288,29 +288,29 @@ enum RequestStatus {
 // ============================================
 
 model Ticket {
-  id            String       @id @default(uuid())
-  ticketNumber  String       @unique
-  title         String
-  description   String       @db.Text
-  issueType     IssueType
-  priority      Priority     @default(NORMAL)
-  status        TicketStatus @default(SUBMITTED)
-  assetId       String?
-  departmentId  String
-  labId         String?
-  createdById   String
-  assignedToId  String?
-  resolution    String?      @db.Text
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  resolvedAt    DateTime?
+  id           String       @id @default(uuid())
+  ticketNumber String       @unique
+  title        String
+  description  String       @db.Text
+  issueType    IssueType
+  priority     Priority     @default(NORMAL)
+  status       TicketStatus @default(SUBMITTED)
+  assetId      String?
+  departmentId String
+  labId        String?
+  createdById  String
+  assignedToId String?
+  resolution   String?      @db.Text
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  resolvedAt   DateTime?
 
   // Relations
-  asset         Asset?       @relation(fields: [assetId], references: [id])
-  department    Department   @relation(fields: [departmentId], references: [id])
-  lab           Lab?         @relation(fields: [labId], references: [id])
-  createdBy     User         @relation("TicketCreator", fields: [createdById], references: [id], onDelete: Cascade)
-  assignedTo    User?        @relation("TicketAssignee", fields: [assignedToId], references: [id])
+  asset      Asset?     @relation(fields: [assetId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  lab        Lab?       @relation(fields: [labId], references: [id])
+  createdBy  User       @relation("TicketCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  assignedTo User?      @relation("TicketAssignee", fields: [assignedToId], references: [id])
 
   @@index([ticketNumber])
   @@index([status])
@@ -359,25 +359,25 @@ model MaintenanceLog {
   createdAt   DateTime @default(now())
 
   // Relations
-  asset       Asset    @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
   @@index([assetId])
   @@index([performedAt])
 }
 
 model ActivityLog {
-  id          String   @id @default(uuid())
-  userId      String
-  action      String
-  entity      String
-  entityId    String?
-  details     String?  @db.Text
-  ipAddress   String?
-  userAgent   String?  @db.Text
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   String?  @db.Text
+  ipAddress String?
+  userAgent String?  @db.Text
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([entity])

@@ -161,24 +161,28 @@ export default function HODDashboard() {
             {/* Simplified Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                    { label: "Total Assets", value: stats?.totalSystems || 0, icon: Monitor, color: "text-green-600", bg: "bg-green-50", href: "/assets" },
-                    { label: "Pending Requests", value: stats?.pendingRequests || 0, icon: History, color: "text-orange-600", bg: "bg-orange-50", href: "/dashboard/hod#request-pipeline" },
-                    { label: "Working Condition", value: `${Math.round((stats?.workingSystems / stats?.totalSystems) * 100) || 0}%`, icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
+                    { label: "Total Assets", value: stats?.totalSystems || 0, change: "Managed", icon: Monitor, color: "text-blue-600", bg: "bg-blue-50", href: "/assets" },
+                    { label: "Pending Requests", value: stats?.pendingRequests || 0, change: "Action Needed", icon: History, color: "text-orange-500", bg: "bg-orange-50", href: "/dashboard/hod#request-pipeline" },
+                    { label: "Working Condition", value: `${Math.round((stats?.workingSystems / stats?.totalSystems) * 100) || 0}%`, change: "Optimal", icon: CheckCircle2, color: "text-blue-600", bg: "bg-blue-50" },
                 ].map((stat, i) => (
                     <div
                         key={i}
                         onClick={() => stat.href && router.push(stat.href)}
-                        className="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                        className="bg-[#f6f9fc] p-6 rounded-3xl border border-slate-100/60 shadow-sm relative group overflow-hidden transition-all hover:shadow-md cursor-pointer"
                     >
-                        <div className="flex items-center gap-4">
-                            <div className={`h-12 w-12 rounded-2xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
-                                <stat.icon className="h-6 w-6" />
+                        <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} -mr-8 -mt-8 rounded-full opacity-50 group-hover:scale-110 transition-transform`} />
+                        <div className="relative z-10 flex flex-col gap-5">
+                            <div className="flex justify-between items-start">
+                                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                                <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-current transition-colors" />
                             </div>
                             <div>
-                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider">{stat.label}</p>
-                                <h3 className="text-2xl font-bold text-slate-900 mt-0.5">{stat.value}</h3>
+                                <p className="text-slate-500 text-sm font-bold">{stat.label}</p>
+                                <div className="flex items-center gap-3 mt-1 text-slate-900">
+                                    <h3 className="text-[32px] leading-none font-black">{stat.value}</h3>
+                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-md text-slate-500 bg-white shadow-sm self-end mb-1">{stat.change}</span>
+                                </div>
                             </div>
-                            <ChevronRight className="ml-auto h-5 w-5 text-slate-200 group-hover:text-slate-400 transition-colors" />
                         </div>
                     </div>
                 ))}

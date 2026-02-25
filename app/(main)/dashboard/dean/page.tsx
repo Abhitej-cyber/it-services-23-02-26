@@ -200,13 +200,13 @@ export default function DeanDashboard() {
                         value: stats?.totalSystems || 0,
                         change: "Live Sync",
                         icon: Monitor,
-                        color: "text-green-600",
-                        bg: "bg-green-50",
+                        color: "text-blue-600",
+                        bg: "bg-blue-50",
                         subtext: stats?.lastSync ? `Updated ${new Date(stats.lastSync).toLocaleTimeString()}` : "Fetching..."
                     },
-                    { label: "Ready for Use", value: stats?.readyForUse || 0, change: "Active", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
-                    { label: "Service", value: stats?.service || 0, change: "Under Maintenance", icon: Wrench, color: "text-orange-600", bg: "bg-orange-50" },
-                    { label: "Priority Tasks", value: stats?.priorityTasks || 0, change: "Urgent Attention", icon: AlertCircle, color: "text-red-600", bg: "bg-red-50" },
+                    { label: "Ready for Use", value: stats?.readyForUse || 0, change: "Active", icon: CheckCircle2, color: "text-blue-600", bg: "bg-blue-50" },
+                    { label: "Service", value: stats?.service || 0, change: "Under Maintenance", icon: Wrench, color: "text-orange-500", bg: "bg-orange-50" },
+                    { label: "Priority Tasks", value: stats?.priorityTasks || 0, change: "Urgent Attention", icon: AlertCircle, color: "text-red-500", bg: "bg-red-50" },
                 ].map((kpi, i) => (
                     <div
                         key={i}
@@ -216,22 +216,21 @@ export default function DeanDashboard() {
                             }
                         }}
                         className={cn(
-                            "bg-white p-7 rounded-3xl shadow-sm border border-slate-100 relative group overflow-hidden transition-all",
+                            "bg-[#f6f9fc] p-6 rounded-3xl border border-slate-100/60 shadow-sm relative group overflow-hidden transition-all",
                             kpi.label === "Priority Tasks" && "cursor-pointer hover:shadow-xl hover:shadow-red-50 hover:border-red-100"
                         )}
                     >
                         <div className={`absolute top-0 right-0 w-24 h-24 ${kpi.bg} -mr-8 -mt-8 rounded-full opacity-50 group-hover:scale-110 transition-transform`} />
-                        <div className="relative z-10 flex flex-col gap-4">
-                            <div className={`self-start p-3 rounded-2xl ${kpi.bg}`}>
-                                <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
-                            </div>
+                        <div className="relative z-10 flex flex-col gap-5">
+                            <kpi.icon className={`h-6 w-6 ${kpi.color}`} />
+
                             <div>
-                                <p className="text-slate-500 text-sm font-semibold">{kpi.label}</p>
-                                <div className="flex items-end gap-2 mt-1">
-                                    <h3 className="text-3xl font-black text-slate-900">{kpi.value}</h3>
-                                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded text-slate-500 bg-slate-50">{kpi.change}</span>
+                                <p className="text-slate-500 text-sm font-bold">{kpi.label}</p>
+                                <div className="flex items-center gap-3 mt-1 text-slate-900">
+                                    <h3 className="text-[32px] leading-none font-black">{kpi.value}</h3>
+                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-md text-slate-500 bg-white shadow-sm self-end mb-1">{kpi.change}</span>
                                 </div>
-                                {'subtext' in kpi && <p className="text-[9px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">{kpi.subtext}</p>}
+                                {'subtext' in kpi && <p className="text-[8px] text-slate-400 mt-3 font-black uppercase tracking-widest">{kpi.subtext}</p>}
                             </div>
                         </div>
                     </div>

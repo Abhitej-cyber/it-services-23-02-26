@@ -157,7 +157,17 @@ export default function HODLoginPage() {
                                         )}
                                     </button>
                                 </div>
+                                <div className="mt-2 text-right">
+                                    <button
+                                        type="button"
+                                        onClick={() => router.push("/login/hod/forgot-password")}
+                                        className="text-sm text-green-600 hover:text-green-700 font-medium hover:underline transition-colors"
+                                    >
+                                        Forgot Password?
+                                    </button>
+                                </div>
                             </div>
+
 
                             {error && (
                                 <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">

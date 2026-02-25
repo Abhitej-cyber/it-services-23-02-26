@@ -78,6 +78,14 @@ export default function AdminDashboard() {
         }
     };
 
+    const getUnifiedStatus = (status: string) => {
+        if (status === "SUBMITTED" || status === "PENDING") return "PENDING";
+        if (status === "PROCESSING" || status === "QUEUED" || status === "ASSIGNED" || status === "IN_PROGRESS") return "IN_PROCESS";
+        if (status === "RESOLVED" || status === "DEPLOYED" || status === "COMPLETED") return "RESOLVED";
+        if (status === "CLOSED" || status === "DECLINED") return "CLOSED";
+        return status;
+    };
+
     const filteredTickets = tickets
         .filter(t => {
             const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -85,7 +93,26 @@ export default function AdminDashboard() {
             const matchesPriority = filterPriority === "ALL" || t.priority === filterPriority;
             return matchesSearch && matchesPriority;
         })
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        .sort((a, b) => {
+            const statusOrder: Record<string, number> = {
+                "SUBMITTED": 0, "PENDING": 0, "APPROVED": 0,
+                "PROCESSING": 1, "QUEUED": 1, "ASSIGNED": 1, "IN_PROGRESS": 1,
+                "RESOLVED": 2, "DEPLOYED": 2, "COMPLETED": 2,
+                "CLOSED": 3, "DECLINED": 3
+            };
+
+            const statusA = getUnifiedStatus(a.status);
+            const statusB = getUnifiedStatus(b.status);
+
+            const orderA = statusOrder[statusA] ?? 4;
+            const orderB = statusOrder[statusB] ?? 4;
+
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
 
     const filteredRequests = requests
         .filter(r => {
@@ -95,6 +122,7 @@ export default function AdminDashboard() {
             return matchesSearch && matchesPriority;
         })
         .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+
 
     if (loading) {
         return (
@@ -129,10 +157,10 @@ export default function AdminDashboard() {
             {/* Concise Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: "Managed Systems", value: stats?.totalSystems || 0, change: "Live Sync", icon: Shield, color: "text-blue-600", bg: "bg-blue-50" },
-                    { label: "Active Servers", value: stats?.totalServers || 0, change: "Active", icon: Server, color: "text-blue-600", bg: "bg-blue-50" },
-                    { label: "Network Nodes", value: stats?.totalRouters || 0, change: "Online", icon: Network, color: "text-blue-600", bg: "bg-blue-50" },
-                    { label: "Pending Requests", value: stats?.pendingTickets || 0, change: "Awaiting", icon: Clock, color: "text-orange-500", bg: "bg-orange-50" },
+                    { label: "Total Systems", value: stats?.totalSystems || 0, change: "Inventory", icon: Shield, color: "text-blue-600", bg: "bg-blue-50" },
+                    { label: "Pending Tasks", value: stats?.pendingTickets || 0, change: "Awaiting", icon: Clock, color: "text-emerald-600", bg: "bg-emerald-50" },
+                    { label: "In Process", value: stats?.inProgressTickets || 0, change: "Active", icon: AlertCircle, color: "text-orange-500", bg: "bg-orange-50" },
+                    { label: "Resolved Today", value: stats?.completedToday || 0, change: "Ready", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
                 ].map((stat, i) => (
                     <div key={i} className="bg-[#f6f9fc] p-6 rounded-3xl border border-slate-100/60 shadow-sm relative group overflow-hidden transition-all">
                         <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} -mr-8 -mt-8 rounded-full opacity-50 group-hover:scale-110 transition-transform`} />
@@ -201,7 +229,7 @@ export default function AdminDashboard() {
                                                     }`} />
                                                 <div>
                                                     <h4 className="font-semibold text-slate-900 group-hover:text-green-600 transition-colors uppercase text-sm tracking-wide">
-                                                        {ticket.ticketNumber} • {ticket.title}
+                                                        {ticket.title}
                                                     </h4>
                                                     <p className="text-slate-500 text-sm mt-1">{ticket.department?.name} • {ticket.lab?.name || "General"}</p>
                                                     <div className="flex items-center gap-2 mt-3">
@@ -220,11 +248,11 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-2">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${ticket.status === "DEPLOYED" || ticket.status === "RESOLVED" ? "bg-green-100 text-green-700" :
-                                                    ticket.status === "PROCESSING" ? "bg-emerald-100 text-emerald-700" :
-                                                        "bg-green-100 text-green-700"
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${getUnifiedStatus(ticket.status) === "RESOLVED" ? "bg-green-100 text-green-700" :
+                                                    getUnifiedStatus(ticket.status) === "IN_PROCESS" ? "bg-orange-100 text-orange-700" :
+                                                        "bg-emerald-100 text-emerald-700"
                                                     }`}>
-                                                    {ticket.status}
+                                                    {getUnifiedStatus(ticket.status).replace('_', ' ')}
                                                 </span>
                                                 <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
                                             </div>
@@ -248,7 +276,7 @@ export default function AdminDashboard() {
                                                     }`} />
                                                 <div>
                                                     <h4 className="font-semibold text-slate-900 uppercase text-sm tracking-wide">
-                                                        {request.requestNumber} • {request.title}
+                                                        {request.title}
                                                     </h4>
                                                     <p className="text-slate-500 text-sm mt-1">From: {request.createdBy.name} ({request.department.code})</p>
                                                     <div className="flex items-center gap-2 mt-3">
@@ -261,8 +289,11 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-2">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${request.status === "APPROVED" ? "bg-emerald-100 text-emerald-700" : "bg-green-100 text-green-700"}`}>
-                                                    {request.status}
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${getUnifiedStatus(request.status) === "RESOLVED" ? "bg-green-100 text-green-700" :
+                                                    getUnifiedStatus(request.status) === "IN_PROCESS" ? "bg-orange-100 text-orange-700" :
+                                                        "bg-emerald-100 text-emerald-700"
+                                                    }`}>
+                                                    {getUnifiedStatus(request.status).replace('_', ' ')}
                                                 </span>
                                                 <button
                                                     onClick={() => {

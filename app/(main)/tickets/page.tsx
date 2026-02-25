@@ -75,9 +75,21 @@ export default function TicketsPage() {
                     isResourceRequest: true
                 }));
 
-            setTickets([...fetchedTickets, ...mappedRequests].sort((a, b) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            ));
+            const statusOrder: Record<string, number> = {
+                "SUBMITTED": 0, "PENDING": 0, "APPROVED": 0,
+                "PROCESSING": 1, "QUEUED": 1, "ASSIGNED": 1, "IN_PROGRESS": 1,
+                "RESOLVED": 2, "DEPLOYED": 2, "COMPLETED": 2,
+                "CLOSED": 3, "DECLINED": 3
+            };
+
+            const combined = [...fetchedTickets, ...mappedRequests].sort((a, b) => {
+                const orderA = statusOrder[a.status] ?? 4;
+                const orderB = statusOrder[b.status] ?? 4;
+                if (orderA !== orderB) return orderA - orderB;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
+
+            setTickets(combined);
         } catch (error) {
             console.error("Failed to fetch queue items", error);
             setTickets([]);
@@ -125,14 +137,12 @@ export default function TicketsPage() {
         // Map unified UI status to database-specific enums
         let finalStatus = unifiedStatus;
         if (isRequest) {
-            if (unifiedStatus === "PENDING") finalStatus = "PENDING";
             if (unifiedStatus === "IN_PROCESS") finalStatus = "IN_PROGRESS";
-            if (unifiedStatus === "COMPLETED") finalStatus = "COMPLETED";
+            if (unifiedStatus === "RESOLVED") finalStatus = "COMPLETED";
             if (unifiedStatus === "CLOSED") finalStatus = "DECLINED";
         } else {
-            if (unifiedStatus === "PENDING") finalStatus = "SUBMITTED";
             if (unifiedStatus === "IN_PROCESS") finalStatus = "PROCESSING";
-            if (unifiedStatus === "COMPLETED") finalStatus = "RESOLVED";
+            if (unifiedStatus === "RESOLVED") finalStatus = "RESOLVED";
             if (unifiedStatus === "CLOSED") finalStatus = "CLOSED";
         }
 
@@ -150,9 +160,9 @@ export default function TicketsPage() {
     };
 
     const getUnifiedStatus = (status: string) => {
-        if (status === "SUBMITTED") return "PENDING";
+        if (status === "SUBMITTED" || status === "PENDING") return "PENDING";
         if (status === "PROCESSING" || status === "QUEUED" || status === "ASSIGNED" || status === "IN_PROGRESS") return "IN_PROCESS";
-        if (status === "RESOLVED" || status === "DEPLOYED") return "COMPLETED";
+        if (status === "RESOLVED" || status === "DEPLOYED" || status === "COMPLETED") return "RESOLVED";
         if (status === "CLOSED" || status === "DECLINED") return "CLOSED";
         return status;
     };
@@ -182,28 +192,27 @@ export default function TicketsPage() {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-                {/* Status Bubbles */}
-                <div className="xl:col-span-1 space-y-4">
-                    {[
-                        { label: "New & Open", count: tickets.filter(t => t.status === "SUBMITTED" || t.status === "APPROVED").length, color: "text-emerald-600", bg: "bg-emerald-50" },
-                        { label: "In Progress", count: tickets.filter(t => t.status === "PROCESSING" || t.status === "IN_PROGRESS").length, color: "text-orange-600", bg: "bg-orange-50" },
-                        { label: "Resolved", count: tickets.filter(t => t.status === "RESOLVED" || t.status === "DEPLOYED" || t.status === "COMPLETED").length, color: "text-green-600", bg: "bg-green-50" },
-                    ].map((stat, i) => (
-                        <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between group cursor-pointer hover:border-green-200 transition-all">
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                                <p className={`text-2xl font-black ${stat.color} mt-1`}>{stat.count}</p>
-                            </div>
-                            <div className={`p-3 rounded-2xl ${stat.bg}`}>
-                                <Ticket className={`h-5 w-5 ${stat.color}`} />
-                            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                    { label: "New & Open", count: tickets.filter(t => t.status === "SUBMITTED" || t.status === "APPROVED").length, color: "text-emerald-600", bg: "bg-emerald-50" },
+                    { label: "In Process", count: tickets.filter(t => t.status === "PROCESSING" || t.status === "IN_PROGRESS").length, color: "text-orange-600", bg: "bg-orange-50" },
+                    { label: "Resolved", count: tickets.filter(t => t.status === "RESOLVED" || t.status === "DEPLOYED" || t.status === "COMPLETED").length, color: "text-green-600", bg: "bg-green-50" },
+                ].map((stat, i) => (
+                    <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between group cursor-pointer hover:border-green-200 transition-all">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                            <p className={`text-2xl font-black ${stat.color} mt-1`}>{stat.count}</p>
                         </div>
-                    ))}
-                </div>
+                        <div className={`p-3 rounded-2xl ${stat.bg}`}>
+                            <Ticket className={`h-5 w-5 ${stat.color}`} />
+                        </div>
+                    </div>
+                ))}
+            </div>
 
+            <div className="space-y-6">
                 {/* Ticket List */}
-                <div className="xl:col-span-3">
+                <div className="w-full">
                     <div className="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
                         <div className="p-8 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                             <div className="flex items-center gap-4">
@@ -251,8 +260,7 @@ export default function TicketsPage() {
                                                             }`}>
                                                             {ticket.issueType.replace('_', ' ')}
                                                         </span>
-                                                        <span className="text-slate-300">•</span>
-                                                        <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">{ticket.ticketNumber}</span>
+
                                                         {ticket.isResourceRequest && (
                                                             <>
                                                                 <span className="text-slate-300">•</span>
@@ -275,11 +283,11 @@ export default function TicketsPage() {
                                                     <p className="text-xs font-bold text-slate-700">{ticket.createdBy?.name}</p>
                                                 </div>
                                                 <div className="flex flex-col gap-2">
-                                                    <span className={`px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center ${ticket.status === "DEPLOYED" || ticket.status === "RESOLVED" ? "bg-green-500 text-white" :
-                                                        ticket.status === "PROCESSING" ? "bg-emerald-500 text-white" :
-                                                            "bg-slate-900 text-white"
+                                                    <span className={`px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center ${getUnifiedStatus(ticket.status) === "RESOLVED" ? "bg-green-500 text-white" :
+                                                            getUnifiedStatus(ticket.status) === "IN_PROCESS" ? "bg-orange-500 text-white" :
+                                                                "bg-emerald-500 text-white"
                                                         }`}>
-                                                        {ticket.status}
+                                                        {getUnifiedStatus(ticket.status).replace('_', ' ')}
                                                     </span>
                                                     {session?.user?.role === "ADMIN" && (
                                                         <select
@@ -293,7 +301,7 @@ export default function TicketsPage() {
                                                         >
                                                             <option value="APPROVED">Approved</option>
                                                             <option value="IN_PROCESS">In Process</option>
-                                                            <option value="COMPLETED">Completed</option>
+                                                            <option value="RESOLVED">Resolved</option>
                                                         </select>
                                                     )}
                                                 </div>

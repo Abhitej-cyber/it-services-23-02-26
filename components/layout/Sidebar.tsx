@@ -16,7 +16,8 @@ import {
     Monitor,
     Wrench,
     Activity,
-    User
+    User,
+    Layers
 } from "lucide-react";
 
 export function Sidebar() {
@@ -33,14 +34,17 @@ export function Sidebar() {
         { name: "Departments", href: "/departments", icon: Building2 },
         { name: "Labs", href: "/labs", icon: Server },
         { name: "Assets", href: "/assets", icon: Monitor },
+        { name: "Allocate Systems", href: "/allocate", icon: Layers, deanOnly: true },
         { name: "Requests", href: "/tickets", icon: Wrench },
         { name: "Users", href: "/users", icon: User },
         { name: "History", href: "/notifications", icon: Activity },
     ];
 
-    const filteredLinks = sidebarLinks.filter(link => {
+    const filteredLinks = sidebarLinks.filter((link: any) => {
         const role = session?.user?.role;
 
+        // Dean-only links
+        if (link.deanOnly && role !== "DEAN") return false;
 
         // Hide Departments for HOD and ADMIN
         if (role === "HOD" && link.name === "Departments") return false;

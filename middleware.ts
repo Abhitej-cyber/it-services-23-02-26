@@ -15,6 +15,7 @@ export default withAuth(
             "/dashboard/hod": ["HOD"],
             "/dashboard/admin": ["ADMIN"],
             "/dashboard/lab-incharge": ["LAB_INCHARGE"],
+            "/allocate": ["DEAN"],
         };
 
         // Check if the path requires role-based access
@@ -50,7 +51,9 @@ export const config = {
         "/notifications/:path*",
         "/settings/:path*",
         "/tickets/:path*",
-        "/users/:path*"
+        "/users/:path*",
+        "/allocate/:path*",
+        "/allocate"
     ],
 };
 

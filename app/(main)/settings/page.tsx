@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import {
     Settings as SettingsIcon,
     User,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 
 export default function SettingsPage() {
+    const { data: session } = useSession();
     const [saved, setSaved] = useState(false);
 
     const handleSave = () => {
@@ -66,11 +68,19 @@ export default function SettingsPage() {
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
-                                    <input className="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-green-500 font-bold" defaultValue="HOD CSE" />
+                                    <input
+                                        className="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-green-500 font-bold"
+                                        value={session?.user?.name || ""}
+                                        readOnly
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Address</label>
-                                    <input className="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-green-500 font-bold" defaultValue="hod.cse@institution.edu" />
+                                    <input
+                                        className="w-full p-4 bg-slate-50 rounded-2xl border-none focus:ring-2 focus:ring-green-500 font-bold"
+                                        value={session?.user?.email || ""}
+                                        readOnly
+                                    />
                                 </div>
                             </div>
                         </section>

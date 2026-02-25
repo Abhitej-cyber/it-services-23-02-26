@@ -38,6 +38,7 @@ export function Sidebar() {
         { name: "Requests", href: "/tickets", icon: Wrench },
         { name: "Users", href: "/users", icon: User },
         { name: "History", href: "/notifications", icon: Activity },
+        { name: "Settings", href: "/settings", icon: Settings },
     ];
 
     const filteredLinks = sidebarLinks.filter((link: any) => {

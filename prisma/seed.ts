@@ -269,8 +269,10 @@ async function main() {
     // 7. Create Requests
     console.log("Creating requests...");
 
-    const request1 = await prisma.request.create({
-        data: {
+    const request1 = await prisma.request.upsert({
+        where: { requestNumber: "REQ-2026-0001" },
+        update: {},
+        create: {
             requestNumber: "REQ-2026-0001",
             title: "New System Allocation for Lab 303",
             description: "Request for 50 new desktop systems for the newly setup Programming Lab 303",
@@ -282,8 +284,10 @@ async function main() {
         },
     });
 
-    const request2 = await prisma.request.create({
-        data: {
+    const request2 = await prisma.request.upsert({
+        where: { requestNumber: "REQ-2026-0002" },
+        update: {},
+        create: {
             requestNumber: "REQ-2026-0002",
             title: "Hardware Repair - Projector",
             description: "Projector in Lab 302 needs repair. Display is flickering.",
@@ -300,8 +304,10 @@ async function main() {
     // 8. Create Tickets
     console.log("Creating tickets...");
 
-    const ticket1 = await prisma.ticket.create({
-        data: {
+    const ticket1 = await prisma.ticket.upsert({
+        where: { ticketNumber: "TKT-2026-0001" },
+        update: {},
+        create: {
             ticketNumber: "TKT-2026-0001",
             title: "Monitor not working - PC12",
             description: "Monitor on PC12 is not displaying anything. Power LED is on but screen is black.",
@@ -315,8 +321,10 @@ async function main() {
         },
     });
 
-    const ticket2 = await prisma.ticket.create({
-        data: {
+    const ticket2 = await prisma.ticket.upsert({
+        where: { ticketNumber: "TKT-2026-0002" },
+        update: {},
+        create: {
             ticketNumber: "TKT-2026-0002",
             title: "Software Installation - VS Code",
             description: "Need to install Visual Studio Code on all systems in Lab 302",
@@ -330,8 +338,10 @@ async function main() {
         },
     });
 
-    const ticket3 = await prisma.ticket.create({
-        data: {
+    const ticket3 = await prisma.ticket.upsert({
+        where: { ticketNumber: "TKT-2026-0003" },
+        update: {},
+        create: {
             ticketNumber: "TKT-2026-0003",
             title: "Network connectivity issue",
             description: "Systems in Lab 301 are unable to connect to the internet",

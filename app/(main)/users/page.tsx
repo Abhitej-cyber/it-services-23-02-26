@@ -128,7 +128,11 @@ export default function UsersPage() {
     const filteredUsers = users.filter(user =>
         (user.name?.toLowerCase().includes(search.toLowerCase()) ||
             user.email?.toLowerCase().includes(search.toLowerCase())) &&
-        (session?.user?.role === "HOD" ? user.role === "LAB_INCHARGE" : user.role === "HOD")
+        (
+            session?.user?.role === "HOD" ? user.role === "LAB_INCHARGE" :
+                session?.user?.role === "ADMIN" ? (user.role === "HOD" || user.role === "LAB_INCHARGE") :
+                    user.role === "HOD"
+        )
     );
 
     return (
@@ -143,13 +147,17 @@ export default function UsersPage() {
                             <Briefcase className="h-4 w-4 text-blue-600" />
                         </div>
                         <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                            {session?.user?.role === "HOD" ? "Lab Incharges" : "Department Heads"}
+                            {session?.user?.role === "HOD" ? "Lab Incharges" :
+                                session?.user?.role === "ADMIN" ? "Department Heads & Lab Incharges" :
+                                    "Department Heads"}
                         </h1>
                     </div>
                     <p className="text-slate-500 font-medium ml-11">
                         {session?.user?.role === "HOD"
                             ? "Directory of departmental laboratory leadership"
-                            : "Directory of institutional department leadership"}
+                            : session?.user?.role === "ADMIN"
+                                ? "Directory of institutional department leadership and lab incharges"
+                                : "Directory of institutional department leadership"}
                     </p>
                 </div>
 

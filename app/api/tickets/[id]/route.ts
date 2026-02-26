@@ -26,6 +26,12 @@ export async function PATCH(
             data.resolvedAt = new Date();
         }
 
+        // Fetch current ticket to get dept/lab for logging
+        const currentTicket = await prisma.ticket.findUnique({
+            where: { id },
+            select: { departmentId: true, labId: true, ticketNumber: true }
+        });
+
         const ticket = await prisma.ticket.update({
             where: { id },
             data,
@@ -36,7 +42,9 @@ export async function PATCH(
             action: "UPDATE",
             entity: "TICKET",
             entityId: id,
-            details: `Updated ticket status to ${status || 'unchanged'}`
+            details: `Updated ticket ${currentTicket?.ticketNumber} status to ${status || 'unchanged'}`,
+            departmentId: currentTicket?.departmentId,
+            labId: currentTicket?.labId || undefined
         });
 
         return NextResponse.json(ticket);

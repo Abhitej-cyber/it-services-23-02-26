@@ -12,7 +12,9 @@ export async function GET(req: NextRequest) {
         const role = session.user.role;
         const userId = session.user.id;
 
-        const where: any = {};
+        const where: any = {
+            OR: [{ userId: userId }] // Always allow seeing own actions
+        };
 
         if (role === "HOD") {
             const user = await prisma.user.findUnique({
@@ -20,32 +22,35 @@ export async function GET(req: NextRequest) {
                 select: { departmentId: true }
             });
             if (user?.departmentId) {
-                where.OR = [
-                    {
-                        departmentId: user.departmentId,
-                        details: { not: { contains: "(HOD)" } } // Don't show other HOD approvals
-                    },
-                    { userId: userId },
-                    {
-                        departmentId: null,
-                        details: { not: { contains: "Account Approval" } }
-                    }
-                ];
-                // Specifically allow seeing their OWN account activities
-                where.OR.push({ userId: userId });
+                where.OR.push({
+                    departmentId: user.departmentId,
+                    details: { not: { contains: "(HOD)" } },
+                    NOT: { details: { contains: "Account Approval" } }
+                });
             }
         } else if (role === "LAB_INCHARGE") {
             const user = await prisma.user.findUnique({
                 where: { id: userId },
-                select: { labId: true }
+                select: { labId: true, departmentId: true }
             });
-            if (user?.labId) {
-                where.OR = [
-                    { labId: user.labId },
-                    { userId: userId },
-                    { labId: null, departmentId: null } // global
-                ];
-            }
+
+            where.OR.push({
+                AND: [
+                    {
+                        OR: [
+                            { labId: user?.labId },
+                            { departmentId: user?.departmentId }
+                        ]
+                    },
+                    { entity: { in: ["TICKET", "ASSET", "REQUEST"] } },
+                    {
+                        NOT: [
+                            { details: { contains: "Account Approval" } },
+                            { details: { contains: "New account registered" } }
+                        ]
+                    }
+                ]
+            });
         }
 
         const activities = await prisma.activityLog.findMany({

@@ -36,29 +36,9 @@ export default function SettingsPage() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Navigation Sidebar */}
-                <div className="space-y-2">
-                    {[
-                        { label: "Profile Information", icon: User, active: true },
-                        { label: "Notifications", icon: Bell },
-                        { label: "Security & Access", icon: Shield },
-                    ].map((item, i) => (
-                        <button
-                            key={i}
-                            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${item.active
-                                ? "bg-white text-green-600 shadow-sm border border-slate-100"
-                                : "text-slate-400 hover:bg-white/50"
-                                }`}
-                        >
-                            <item.icon className="h-5 w-5" />
-                            <span className="font-black text-xs uppercase tracking-widest">{item.label}</span>
-                        </button>
-                    ))}
-                </div>
-
+            <div className="max-w-4xl mx-auto space-y-8">
                 {/* Main Content Area */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="space-y-8">
                     <div className="bg-white p-10 rounded-[40px] border border-slate-100 shadow-sm space-y-10">
                         <section className="space-y-6">
                             <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight flex items-center gap-3">

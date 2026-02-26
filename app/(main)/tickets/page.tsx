@@ -75,15 +75,24 @@ export default function TicketsPage() {
         e.preventDefault();
         setIsSubmitting(true);
         const formData = new FormData(e.currentTarget);
-        const body = Object.fromEntries(formData.entries());
+        const body: any = Object.fromEntries(formData.entries());
 
-        // Derive departmentId from asset or session
-        const selectedAsset = assets.find(a => a.id === selectedAssetId);
-        if (selectedAsset) {
-            body.departmentId = selectedAsset.departmentId;
-        } else if (departments.length > 0) {
-            body.departmentId = departments[0].id; // Fallback
+        // Use session departmentId as primary truth for Lab Incharges
+        if (session?.user?.departmentId) {
+            body.departmentId = session.user.departmentId;
+        } else {
+            // Fallback to asset or general list
+            const selectedAsset = assets.find(a => a.id === selectedAssetId);
+            if (selectedAsset) {
+                body.departmentId = selectedAsset.departmentId;
+            } else if (departments.length > 0) {
+                body.departmentId = departments[0].id;
+            }
         }
+
+        // Ensure empty strings are treated as null for the API
+        if (!body.assetId) body.assetId = null;
+        if (!body.labId) body.labId = null;
 
         try {
             const res = await fetch("/api/tickets", {
@@ -95,9 +104,13 @@ export default function TicketsPage() {
                 setShowCreateModal(false);
                 fetchAllData();
                 setSelectedAssetId("");
+            } else {
+                const error = await res.json();
+                alert(error.error || "Failed to create ticket");
             }
         } catch (error) {
             console.error("Failed to create ticket", error);
+            alert("Network error while creating request");
         } finally {
             setIsSubmitting(false);
         }
@@ -105,7 +118,7 @@ export default function TicketsPage() {
 
     const updateStatus = async (item: any, unifiedStatus: string) => {
         const id = item.id;
-        const isRequest = item.type === 'RESOURCE_REQUEST';
+        const isRequest = item.itemCategory === 'RESOURCE_REQUEST';
 
         // Map unified UI status to database-specific enums
         let finalStatus = unifiedStatus;
@@ -175,8 +188,8 @@ export default function TicketsPage() {
     );
 
     const allItems = [
-        ...filteredTickets.map(t => ({ ...t, type: 'TICKET' })),
-        ...filteredRequests.map(r => ({ ...r, type: 'RESOURCE_REQUEST' }))
+        ...filteredTickets.map(t => ({ ...t, itemCategory: 'TICKET' })),
+        ...filteredRequests.map(r => ({ ...r, itemCategory: 'RESOURCE_REQUEST' }))
     ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return (
@@ -260,16 +273,16 @@ export default function TicketsPage() {
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-3 mb-1">
-                                                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${item.type === 'RESOURCE_REQUEST' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${item.itemCategory === 'RESOURCE_REQUEST' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                                                             item.issueType === "HARDWARE" ? "bg-red-50 text-red-600 border-red-100" :
                                                                 item.issueType === "SOFTWARE" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
                                                                     "bg-green-50 text-green-600 border-green-100"
                                                             }`}>
-                                                            {item.type === 'RESOURCE_REQUEST' ? 'RESOURCE' : item.issueType}
+                                                            {item.itemCategory === 'RESOURCE_REQUEST' ? 'RESOURCE' : item.issueType}
                                                         </span>
                                                         <span className="text-slate-300">•</span>
-                                                        <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">{item.type === 'RESOURCE_REQUEST' ? item.requestNumber : item.ticketNumber}</span>
-                                                        {item.type === 'RESOURCE_REQUEST' && (
+                                                        <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase">{item.itemCategory === 'RESOURCE_REQUEST' ? item.requestNumber : item.ticketNumber}</span>
+                                                        {item.itemCategory === 'RESOURCE_REQUEST' && (
                                                             <>
                                                                 <span className="text-slate-300">•</span>
                                                                 <span className="text-[10px] font-black text-blue-500 tracking-widest uppercase">Approved Request</span>
@@ -279,7 +292,7 @@ export default function TicketsPage() {
                                                     <h4 className="text-lg font-bold text-slate-900 group-hover:text-green-600 transition-colors uppercase tracking-tight">{item.title}</h4>
                                                     <p className="text-slate-500 text-sm mt-1 line-clamp-1">{item.description}</p>
                                                     <div className="flex items-center gap-4 mt-4">
-                                                        {item.type === 'TICKET' && <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">ASSET: {item.asset?.assetNumber || "GENERAL"}</span>}
+                                                        {item.itemCategory === 'TICKET' && <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">ASSET: {item.asset?.assetNumber || "GENERAL"}</span>}
                                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">DEPT: {item.department?.code}</span>
                                                     </div>
                                                 </div>
@@ -292,8 +305,8 @@ export default function TicketsPage() {
                                                 </div>
                                                 <div className="flex flex-col gap-2">
                                                     <span className={`px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center ${getUnifiedStatus(item.status) === "RESOLVED" ? "bg-green-500 text-white" :
-                                                            getUnifiedStatus(item.status) === "IN_PROCESS" ? "bg-orange-500 text-white" :
-                                                                "bg-emerald-500 text-white"
+                                                        getUnifiedStatus(item.status) === "IN_PROCESS" ? "bg-orange-500 text-white" :
+                                                            "bg-emerald-500 text-white"
                                                         }`}>
                                                         {getUnifiedStatus(item.status).replace('_', ' ')}
                                                     </span>
@@ -301,8 +314,8 @@ export default function TicketsPage() {
                                                         <select
                                                             value={getUnifiedStatus(item.status)}
                                                             onChange={(e) => updateStatus(item, e.target.value)}
-                                                            disabled={getUnifiedStatus(item.status) === "RESOLVED" || getUnifiedStatus(item.status) === "CLOSED"}
-                                                            className={`text-[10px] font-black border rounded-lg px-2 py-1.5 uppercase tracking-widest outline-none transition-all ${getUnifiedStatus(item.status) === "RESOLVED" || getUnifiedStatus(item.status) === "CLOSED"
+                                                            disabled={getUnifiedStatus(item.status) === "RESOLVED" || getUnifiedStatus(item.status) === "CLOSED" || item.type === "ACCOUNT_APPROVAL"}
+                                                            className={`text-[10px] font-black border rounded-lg px-2 py-1.5 uppercase tracking-widest outline-none transition-all ${getUnifiedStatus(item.status) === "RESOLVED" || getUnifiedStatus(item.status) === "CLOSED" || item.type === "ACCOUNT_APPROVAL"
                                                                 ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed"
                                                                 : "text-green-600 bg-white border-green-100 focus:ring-2 focus:ring-green-500 cursor-pointer hover:border-green-300"
                                                                 }`}

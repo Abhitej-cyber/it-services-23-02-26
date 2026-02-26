@@ -53,6 +53,9 @@ export async function GET(req: NextRequest) {
                     assignedTo: {
                         select: { name: true, email: true },
                     },
+                    createdBy: {
+                        select: { name: true, email: true },
+                    },
                 },
                 orderBy: {
                     createdAt: "desc",
@@ -130,9 +133,9 @@ export async function POST(req: NextRequest) {
                 description,
                 issueType,
                 priority: priority || "NORMAL",
-                assetId,
+                assetId: assetId || null,
                 departmentId,
-                labId,
+                labId: labId || null,
                 createdById: session.user.id,
             },
             include: {

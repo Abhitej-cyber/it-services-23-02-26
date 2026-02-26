@@ -34,161 +34,169 @@ export default function LabInchargeDashboard() {
     }
 
     return (
-        <div className="p-6 lg:p-10 space-y-10 bg-slate-50 min-h-screen">
-            {/* Dynamic Lab Header */}
-            <div className="bg-white p-10 rounded-[48px] border border-slate-100 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-20 -mr-20 -mt-20 bg-green-500/5 rounded-full blur-3xl" />
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 relative z-10">
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2">
-                            <span className="p-1 px-3 bg-green-100 text-green-700 text-[10px] font-black uppercase tracking-widest rounded-full">CSE-LAB-301</span>
-                            <span className="flex h-2 w-2 rounded-full bg-green-500" />
-                            <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Live Monitoring</span>
+        <div className="p-4 lg:p-6 space-y-6 bg-slate-50 min-h-screen relative overflow-hidden">
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] animate-pulse z-0" />
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse z-0" />
+
+            {/* Premium Lab Oversight Header */}
+            <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white/40 backdrop-blur-md p-6 rounded-[32px] border border-white/50 shadow-sm">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider">Lab Active</span>
                         </div>
-                        <h1 className="text-4xl font-black text-slate-900 leading-tight">Programming Lab 1</h1>
-                        <p className="text-slate-500 font-medium max-w-xl">Real-time oversight of computer infrastructure, licensed software deployments, and proactive maintenance tickets.</p>
+                        <span className="text-slate-300 text-[10px]">•</span>
+                        <span className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">CSE-LAB-301</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <button className="flex items-center gap-3 px-8 py-5 bg-green-600 text-white font-black text-sm rounded-[24px] hover:bg-green-700 hover:shadow-2xl hover:shadow-green-200 transition-all transform hover:-translate-y-1">
-                            <Plus className="h-5 w-5" />
-                            REPORT SYSTEM ISSUE
-                        </button>
-                        <button className="p-5 bg-slate-100 rounded-[24px] hover:bg-slate-200 transition-colors">
-                            <Activity className="h-6 w-6 text-slate-600" />
-                        </button>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                        LAB MONITORING <span className="text-blue-600 italic">SYSTEMS</span>
+                    </h1>
+                    <p className="text-slate-500 text-xs font-medium max-w-md">Real-time oversight of computer infrastructure, software deployments, and maintenance.</p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <div className="hidden sm:flex flex-col items-end mr-4">
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Server Time</p>
+                        <p className="text-sm font-black text-slate-700">{new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                     </div>
+                    <button className="flex items-center gap-2 px-5 py-3 bg-slate-900 text-white font-black text-[11px] rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200">
+                        <Plus className="h-4 w-4" />
+                        REPORT ISSUE
+                    </button>
+                    <button className="p-3 bg-white rounded-2xl border border-slate-100 shadow-sm hover:bg-slate-50 transition-all">
+                        <Activity className="h-5 w-5 text-slate-600" />
+                    </button>
                 </div>
             </div>
 
-            {/* Lab Health Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Vibrant KPI Grid */}
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: "Lab Inventory", value: stats?.totalSystems || 0, change: "Live Sync", icon: Monitor, color: "text-blue-600", bg: "bg-blue-50" },
-                    { label: "Optimal Status", value: stats?.workingSystems || 0, change: "Active", icon: CheckCircle2, color: "text-blue-600", bg: "bg-blue-50" },
-                    { label: "Active Requests", value: stats?.pendingTickets || 0, change: "Attention", icon: Wrench, color: "text-orange-500", bg: "bg-orange-50" },
-                    { label: "System Health", value: "94%", change: "Good", icon: Zap, color: "text-green-500", bg: "bg-green-50" },
+                    { label: "Lab Inventory", value: stats?.totalSystems || 0, change: "Live Sync", icon: Monitor, gradient: "from-blue-600 to-indigo-700", shadow: "shadow-blue-200" },
+                    { label: "Optimal Status", value: stats?.workingSystems || 0, change: "Active", icon: CheckCircle2, gradient: "from-emerald-500 to-teal-700", shadow: "shadow-emerald-200" },
+                    { label: "Active Requests", value: stats?.pendingTickets || 0, change: "Processing", icon: Wrench, gradient: "from-orange-500 to-amber-700", shadow: "shadow-orange-200" },
+                    { label: "System Health", value: "98%", change: "Healthy", icon: Zap, gradient: "from-indigo-600 to-blue-800", shadow: "shadow-indigo-200" },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-[#f6f9fc] p-6 rounded-3xl border border-slate-100/60 shadow-sm relative group overflow-hidden transition-all hover:shadow-md cursor-pointer">
-                        <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} -mr-8 -mt-8 rounded-full opacity-50 group-hover:scale-110 transition-transform`} />
-                        <div className="relative z-10 flex flex-col gap-5">
-                            <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                            <div>
-                                <p className="text-slate-500 text-sm font-bold">{stat.label}</p>
-                                <div className="flex items-center gap-3 mt-1 text-slate-900">
-                                    <h3 className="text-[32px] leading-none font-black">{stat.value}</h3>
-                                    <span className="text-[9px] font-bold px-2 py-0.5 rounded-md text-slate-500 bg-white shadow-sm self-end mb-1">{stat.change}</span>
-                                </div>
-                                <div className="mt-3 flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-slate-400">
-                                    <Clock className="h-3 w-3" /> Last checked: 2m ago
-                                </div>
+                    <div key={i} className="group relative bg-white p-5 rounded-[28px] border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        <div className="flex items-start justify-between mb-4">
+                            <div className={`p-3 rounded-2xl bg-gradient-to-br ${stat.gradient} ${stat.shadow} shadow-lg text-white`}>
+                                <stat.icon className="h-4 w-4" />
                             </div>
+                            <span className="text-[9px] font-black px-2 py-1 rounded-lg text-slate-400 bg-slate-50 border border-slate-100 group-hover:bg-white transition-colors uppercase tracking-widest">
+                                {stat.change}
+                            </span>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em]">{stat.label}</p>
+                            <h3 className="text-2xl font-black text-slate-900 mt-1 tracking-tight">{stat.value}</h3>
+                        </div>
+                        <div className="mt-4 flex items-center gap-2 text-[8px] font-bold text-slate-400 border-t border-slate-50 pt-3">
+                            <Clock className="h-3 w-3" /> Updated moments ago
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Ticket List */}
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Refined Activity List */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-[48px] shadow-sm border border-slate-100 overflow-hidden">
-                        <div className="p-10 border-b border-slate-50 flex items-center justify-between">
+                    <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+                        <div className="p-6 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                             <div>
-                                <h2 className="text-2xl font-black text-slate-900">Lab Activity & Requests</h2>
-                                <p className="text-slate-500 text-sm mt-1">Status of ongoing maintenance and reported hardware/software issues</p>
+                                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight">Active Maintenance</h2>
+                                <p className="text-slate-400 text-[11px] font-medium">Tracking reported infrastructure technical queries</p>
                             </div>
-                            <button className="p-3 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors">
-                                <Ticket className="h-6 w-6 text-slate-400" />
-                            </button>
+                            <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
+                                <Ticket className="h-5 w-5 text-slate-400" />
+                            </div>
                         </div>
 
                         <div className="divide-y divide-slate-50">
                             {tickets.length > 0 ? tickets.slice(0, 5).map((t) => (
-                                <div key={t.id} className="p-8 hover:bg-slate-50/50 transition-all group">
-                                    <div className="flex items-center justify-between gap-6">
-                                        <div className="flex items-start gap-6">
-                                            <div className={`mt-1 h-14 w-14 rounded-3xl flex items-center justify-center flex-shrink-0 font-bold text-xs ${t.status === "DEPLOYED" ? "bg-green-100 text-green-600" : "bg-orange-100 text-orange-600"
-                                                }`}>
-                                                {t.status === "DEPLOYED" ? <CheckCircle2 className="h-7 w-7" /> : <Clock className="h-7 w-7" />}
+                                <div key={t.id} className="p-5 hover:bg-slate-50/50 transition-all group">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-5">
+                                            <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center flex-shrink-0 border border-slate-100 group-hover:border-blue-200 transition-all">
+                                                {t.status === "DEPLOYED" ?
+                                                    <CheckCircle2 className="h-5 w-5 text-emerald-500" /> :
+                                                    <Activity className="h-5 w-5 text-blue-500 animate-pulse" />
+                                                }
                                             </div>
                                             <div>
-                                                <div className="flex items-center gap-3 mb-1">
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${t.issueType === "HARDWARE"
+                                                <div className="flex items-center gap-2 mb-0.5">
+                                                    <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${t.issueType === "HARDWARE"
                                                         ? "bg-red-50 text-red-600 border-red-100"
-                                                        : "bg-green-50 text-green-600 border-green-100"
+                                                        : "bg-emerald-50 text-emerald-600 border-emerald-100"
                                                         }`}>
                                                         {t.issueType}
                                                     </span>
-                                                    <span className="text-slate-300">|</span>
-                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.ticketNumber}</span>
+                                                    <span className="text-slate-400 text-[9px] font-bold tracking-widest">{t.ticketNumber}</span>
                                                 </div>
-                                                <h4 className="text-xl font-bold text-slate-900 group-hover:text-green-600 transition-colors">{t.title}</h4>
-                                                <div className="flex items-center gap-4 mt-3">
-                                                    <span className="text-xs font-bold text-slate-500">Asset: PC-402</span>
-                                                    <span className="h-1 w-1 bg-slate-200 rounded-full" />
-                                                    <span className="text-xs text-slate-400 font-medium">Logged on {new Date(t.createdAt).toLocaleDateString()}</span>
-                                                </div>
+                                                <h4 className="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors uppercase truncate max-w-[200px] sm:max-w-md">{t.title}</h4>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className={`px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${t.status === "DEPLOYED" ? "bg-green-500 text-white" : "bg-slate-900 text-white"
+                                        <div className="flex items-center gap-3">
+                                            <span className={`hidden sm:inline-block px-3 py-1 rounded-xl text-[9px] font-black uppercase tracking-widest ${t.status === "DEPLOYED" ? "bg-emerald-50 text-emerald-600" : "bg-slate-900 text-white shadow-lg shadow-slate-200"
                                                 }`}>
                                                 {t.status}
-                                            </div>
-                                            <button className="p-3 bg-white border border-slate-100 rounded-full hover:border-green-200 hover:bg-green-50 transition-all">
-                                                <ArrowRight className="h-5 w-5 text-slate-300 group-hover:text-green-500" />
+                                            </span>
+                                            <button className="p-2 bg-white border border-slate-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                                <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-blue-500" />
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             )) : (
-                                <div className="p-20 text-center text-slate-400 italic font-medium">No active requests for this lab</div>
+                                <div className="p-16 text-center text-slate-400 italic font-medium text-xs">No active technical queries for this lab</div>
                             )}
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
+                        <div className="flex items-center gap-3 mb-6">
+                            <Info className="h-5 w-5 text-emerald-500" />
+                            <h4 className="font-black text-slate-900 uppercase text-xs tracking-[0.2em]">Lab Ethics</h4>
+                        </div>
+                        <div className="space-y-4">
+                            {[
+                                "Report hardware issues instantly.",
+                                "Authorized software only.",
+                                "No external USB devices.",
+                                "Maintain logbook daily."
+                            ].map((guide, i) => (
+                                <div key={i} className="flex gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50">
+                                    <span className="font-black text-emerald-500 text-sm">0{i + 1}</span>
+                                    <p className="text-sm font-bold text-slate-600 uppercase tracking-tight">{guide}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Sidebar Info */}
-                <div className="space-y-8">
-                    <div className="bg-emerald-900 p-10 rounded-[48px] shadow-2xl relative overflow-hidden group">
-                        <div className="absolute bottom-0 right-0 p-12 -mr-16 -mb-16 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-[2000ms]" />
+                {/* Compact Sidebar Info */}
+                <div className="space-y-6">
+                    <div className="bg-slate-900 p-8 rounded-[32px] shadow-xl relative overflow-hidden group border border-slate-800">
+                        <div className="absolute top-0 right-0 p-10 -mr-12 -mt-12 bg-white/5 rounded-full blur-[60px] group-hover:scale-150 transition-transform duration-[2000ms]" />
                         <div className="relative z-10">
-                            <div className="h-16 w-16 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mb-8">
-                                <Server className="h-8 w-8 text-white" />
+                            <div className="h-12 w-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-6 border border-white/10">
+                                <Server className="h-6 w-6 text-white" />
                             </div>
-                            <h3 className="text-2xl font-black text-white leading-tight">Infrastructure Management</h3>
-                            <p className="text-emerald-300 text-sm mt-4 leading-relaxed">
-                                Ensure all lab systems are up to date. Security patches for Windows 11 were deployed successfully.
+                            <h3 className="text-lg font-black text-white leading-tight uppercase tracking-tight">System<br />Infrastructure</h3>
+                            <p className="text-slate-400 text-[11px] mt-3 leading-relaxed font-bold">
+                                Ensure all lab terminals are synchronized. OS security patches were deployed successfully.
                             </p>
-                            <div className="mt-8 flex items-center gap-4">
-                                <div className="flex -space-x-3">
-                                    {[1, 2, 3].map(i => (
-                                        <div key={i} className="h-10 w-10 bg-emerald-700 border-2 border-emerald-900 rounded-full flex items-center justify-center text-[10px] font-black text-white">
-                                            USR
+                            <div className="mt-6 pt-6 border-t border-white/5 flex items-center gap-3">
+                                <div className="flex -space-x-2">
+                                    {[1, 2].map(i => (
+                                        <div key={i} className="h-7 w-7 bg-slate-700 border-2 border-slate-900 rounded-xl flex items-center justify-center text-[8px] font-black text-white uppercase">
+                                            SY
                                         </div>
                                     ))}
                                 </div>
-                                <span className="text-xs font-bold text-emerald-200">System Admin monitoring</span>
+                                <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest tracking-widest">Admin Monitored</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm">
-                        <div className="flex items-center gap-3 mb-6">
-                            <Info className="h-5 w-5 text-emerald-500" />
-                            <h4 className="font-black text-slate-900 uppercase text-xs tracking-widest">Lab Guidelines</h4>
-                        </div>
-                        <div className="space-y-4">
-                            {[
-                                "Report hardware damage within 2 hours of detection.",
-                                "Log off systems before shutting down power.",
-                                "Prohibit external USB drives for security.",
-                                "Maintain system logs daily."
-                            ].map((guide, i) => (
-                                <div key={i} className="flex gap-4 p-4 bg-slate-50/50 rounded-2xl">
-                                    <span className="font-black text-emerald-500 text-xs">0{i + 1}</span>
-                                    <p className="text-xs font-bold text-slate-600 leading-normal">{guide}</p>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>

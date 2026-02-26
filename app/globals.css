@@ -208,30 +208,71 @@
   transform: translateY(900%);
 }
 
-/* Webpage Reload Animation - Circular Spinner */
+
+/* Webpage Reload Animation - Liquid Morph */
 .spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   width: 100%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10000;
+  backdrop-blur: 8px;
 }
 
-.circular-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3b82f6; /* Blue color from image */
+.liquid-morph {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  filter: url('#goo');
+}
+
+.liquid-morph span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform: rotate(calc(var(--i) * 90deg));
+}
+
+.liquid-morph span::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  background: #f7e479;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  box-shadow: 0 0 30px #f7e479;
+  animation: liquid-animate 4s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -1s);
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes liquid-animate {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(40px, 0) scale(1.2);
+  }
+  50% {
+    transform: translate(40px, 40px) scale(1);
+  }
+  75% {
+    transform: translate(0, 40px) scale(0.8);
+  }
+}
+
+.goo-filter {
+  position: absolute;
+  visibility: hidden;
+  width: 0;
+  height: 0;
 }

@@ -157,11 +157,12 @@ export async function GET(req: NextRequest) {
                         },
                     },
                 }),
-                prisma.request.count({ where: { status: { in: ["PENDING", "APPROVED"] } } }),
-                prisma.request.count({ where: { status: { in: ["ASSIGNED", "IN_PROGRESS"] } } }),
+                prisma.request.count({ where: { status: { in: ["PENDING", "APPROVED"] }, type: { not: "ACCOUNT_APPROVAL" } } }),
+                prisma.request.count({ where: { status: { in: ["ASSIGNED", "IN_PROGRESS"] }, type: { not: "ACCOUNT_APPROVAL" } } }),
                 prisma.request.count({
                     where: {
                         status: "COMPLETED",
+                        type: { not: "ACCOUNT_APPROVAL" },
                         completedAt: {
                             gte: new Date(new Date().setHours(0, 0, 0, 0)),
                         },

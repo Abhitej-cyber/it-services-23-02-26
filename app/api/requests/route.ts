@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
             // Admin sees requests approved by Dean or assigned to them
             requests = await prisma.request.findMany({
                 where: {
+                    type: { not: "ACCOUNT_APPROVAL" },
                     OR: [
                         { status: "APPROVED" },
                         { status: "ASSIGNED" },

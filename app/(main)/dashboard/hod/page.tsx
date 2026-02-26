@@ -186,7 +186,7 @@ export default function HODDashboard() {
                     <div className="space-y-4">
                         {(Array.isArray(requests) ? requests : [])
                             .filter(r => showHistory ? true : ["PENDING", "APPROVED", "ASSIGNED", "IN_PROGRESS"].includes(r.status))
-                            .slice(0, 5)
+                            .slice(0, 10)
                             .map((req, index) => (
                                 <div
                                     key={req.id}

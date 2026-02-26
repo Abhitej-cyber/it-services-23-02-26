@@ -59,9 +59,18 @@ export async function PATCH(
 
         // If this was an account approval request, update user status
         if (currentRequest?.type === "ACCOUNT_APPROVAL") {
+            let newUserStatus: "ACTIVE" | "PENDING" | "REJECTED" = "PENDING";
+            if (status === "APPROVED" || status === "COMPLETED") {
+                newUserStatus = "ACTIVE";
+            } else if (status === "DECLINED") {
+                newUserStatus = "REJECTED";
+            } else {
+                newUserStatus = "PENDING";
+            }
+
             await prisma.user.update({
                 where: { id: currentRequest.createdById },
-                data: { status: status === "APPROVED" ? "ACTIVE" : "REJECTED" }
+                data: { status: newUserStatus }
             });
         }
 
@@ -122,10 +131,11 @@ export async function PATCH(
 
         await logActivity({
             userId: session.user.id,
-            action: (status === "APPROVED" || status === "REJECTED") ? status : "UPDATE",
+            action: (status === "APPROVED" || status === "REJECTED" || status === "COMPLETED" || status === "DECLINED") ? status : "UPDATE",
             entity: "REQUEST",
             entityId: id,
-            details: `Updated request ${request.requestNumber}: ${status}`
+            details: `Updated request ${request.requestNumber} (${request.title}): ${status}`,
+            departmentId: request.departmentId
         });
 
         return NextResponse.json(request);

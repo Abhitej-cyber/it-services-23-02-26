@@ -150,7 +150,9 @@ export async function POST(req: NextRequest) {
             action: "CREATE",
             entity: "TICKET",
             entityId: ticket.id,
-            details: `Created service request: ${ticket.title} (${ticket.ticketNumber})`
+            details: `Created service request: ${ticket.title} (${ticket.ticketNumber})`,
+            departmentId: ticket.departmentId,
+            labId: ticket.labId || undefined
         });
 
         return NextResponse.json(ticket, { status: 201 });

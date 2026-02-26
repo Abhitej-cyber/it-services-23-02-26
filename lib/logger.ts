@@ -6,12 +6,16 @@ export async function logActivity({
     entity,
     entityId,
     details,
+    departmentId,
+    labId
 }: {
     userId: string;
     action: string;
     entity: string;
     entityId?: string;
     details?: string;
+    departmentId?: string;
+    labId?: string;
 }) {
     try {
         await prisma.activityLog.create({
@@ -21,6 +25,8 @@ export async function logActivity({
                 entity,
                 entityId,
                 details,
+                departmentId,
+                labId
             },
         });
     } catch (error) {

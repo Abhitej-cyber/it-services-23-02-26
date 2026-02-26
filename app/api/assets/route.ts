@@ -90,7 +90,9 @@ export async function POST(req: NextRequest) {
             action: "CREATE",
             entity: "ASSET",
             entityId: asset.id,
-            details: `Created asset ${asset.assetNumber}`
+            details: `Created asset ${asset.assetNumber}`,
+            departmentId: asset.departmentId,
+            labId: asset.labId || undefined
         });
 
         return NextResponse.json(asset, { status: 201 });

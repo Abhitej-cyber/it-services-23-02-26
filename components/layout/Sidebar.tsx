@@ -16,7 +16,8 @@ import {
     Monitor,
     Wrench,
     Activity,
-    User
+    User,
+    Layers
 } from "lucide-react";
 
 export function Sidebar() {
@@ -33,14 +34,17 @@ export function Sidebar() {
         { name: "Departments", href: "/departments", icon: Building2 },
         { name: "Labs", href: "/labs", icon: Server },
         { name: "Assets", href: "/assets", icon: Monitor },
+        { name: "Allocate Systems", href: "/allocate", icon: Layers, deanOnly: true },
         { name: "Requests", href: "/tickets", icon: Wrench },
         { name: "Users", href: "/users", icon: User },
         { name: "History", href: "/notifications", icon: Activity },
     ];
 
-    const filteredLinks = sidebarLinks.filter(link => {
+    const filteredLinks = sidebarLinks.filter((link: any) => {
         const role = session?.user?.role;
 
+        // Dean-only links
+        if (link.deanOnly && role !== "DEAN") return false;
 
         // Hide Departments for HOD and ADMIN
         if (role === "HOD" && link.name === "Departments") return false;
@@ -56,26 +60,26 @@ export function Sidebar() {
     });
 
     return (
-        <aside className="fixed left-0 top-0 z-40 h-screen w-72 bg-slate-900 text-white shadow-2xl transition-all duration-300">
+        <aside className="fixed left-0 top-0 z-40 h-screen w-72 bg-white text-slate-900 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all duration-300 border-r border-slate-100">
             {/* Branding */}
-            <div className="flex h-24 items-center gap-3 px-8 border-b border-white/5 bg-slate-900/50 backdrop-blur-xl">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/20">
+            <div className="flex h-24 items-center gap-3 px-8 border-b border-slate-100 bg-white/80 backdrop-blur-xl">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
                     <Shield className="h-6 w-6 text-white" />
                 </div>
                 <h1 className="text-xl font-black tracking-tighter uppercase italic">
-                    IT <span className="text-green-500">Services</span>
+                    IT <span className="text-blue-600">Services</span>
                 </h1>
             </div>
 
             {/* Profile Summary */}
-            <div className="mx-6 my-8 p-4 rounded-3xl bg-white/5 border border-white/10">
+            <div className="mx-6 my-8 p-4 rounded-3xl bg-slate-50 border border-slate-100">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center font-bold text-slate-300">
+                    <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-slate-200 to-slate-100 flex items-center justify-center font-bold text-slate-700 shadow-sm border border-slate-200">
                         {session?.user?.name?.charAt(0) || "U"}
                     </div>
                     <div className="flex-1 overflow-hidden">
-                        <p className="text-xs font-black truncate">{session?.user?.name || "User"}</p>
-                        <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest">{session?.user?.role || "Role"}</p>
+                        <p className="text-xs font-black truncate text-slate-900">{session?.user?.name || "User"}</p>
+                        <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">{session?.user?.role || "Role"}</p>
                     </div>
                 </div>
             </div>
@@ -91,8 +95,8 @@ export function Sidebar() {
                             className={cn(
                                 "flex items-center gap-4 px-6 py-4 rounded-[20px] transition-all duration-300 group",
                                 isActive
-                                    ? "bg-green-600 text-white shadow-xl shadow-green-900/40"
-                                    : "text-slate-400 hover:text-white hover:bg-white/5"
+                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
+                                    : "text-slate-500 hover:text-blue-600 hover:bg-slate-50"
                             )}
                         >
                             <link.icon className={cn(
@@ -115,7 +119,7 @@ export function Sidebar() {
                         await signOut({ redirect: false });
                         window.location.href = "/login";
                     }}
-                    className="flex w-full items-center gap-4 px-6 py-4 text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-[20px] transition-all group"
+                    className="flex w-full items-center gap-4 px-6 py-4 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-[20px] transition-all group"
                 >
                     <LogOut className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
                     <span className="text-xs font-black uppercase tracking-widest">Sign Out</span>

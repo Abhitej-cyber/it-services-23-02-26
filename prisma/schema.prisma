@@ -128,6 +128,7 @@ model Department {
   users    User[]
   requests Request[]
   tickets  Ticket[]
+  activities ActivityLog[]
 
   @@index([hodId])
 }
@@ -149,6 +150,7 @@ model Lab {
   assets     Asset[]
   users      User[]
   tickets    Ticket[]
+  activities ActivityLog[]
 
   @@index([departmentId])
   @@index([inchargeId])
@@ -367,20 +369,26 @@ model MaintenanceLog {
 }
 
 model ActivityLog {
-  id        String   @id @default(uuid())
-  userId    String
-  action    String
-  entity    String
-  entityId  String?
-  details   String?  @db.Text
-  ipAddress String?
-  userAgent String?  @db.Text
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  userId       String
+  action       String
+  entity       String
+  entityId     String?
+  details      String?  @db.Text
+  ipAddress    String?
+  userAgent    String?  @db.Text
+  departmentId String?
+  labId        String?
+  createdAt    DateTime @default(now())
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department? @relation(fields: [departmentId], references: [id])
+  lab        Lab?        @relation(fields: [labId], references: [id])
 
   @@index([userId])
   @@index([entity])
+  @@index([departmentId])
+  @@index([labId])
   @@index([createdAt])
 }

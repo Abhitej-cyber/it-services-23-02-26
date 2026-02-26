@@ -83,35 +83,12 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
         }
 
-        // Check if department has dependencies
         const dept = await prisma.department.findUnique({
             where: { id },
-            include: {
-                _count: {
-                    select: {
-                        labs: true,
-                        assets: true,
-                        requests: true,
-                        tickets: true,
-                    }
-                }
-            }
         });
 
         if (!dept) {
             return NextResponse.json({ error: "Department not found" }, { status: 404 });
-        }
-
-        const blockingDependencies = [];
-        if (dept._count.labs > 0) blockingDependencies.push(`${dept._count.labs} labs`);
-        if (dept._count.assets > 0) blockingDependencies.push(`${dept._count.assets} assets`);
-        if (dept._count.requests > 0) blockingDependencies.push(`${dept._count.requests} requests`);
-        if (dept._count.tickets > 0) blockingDependencies.push(`${dept._count.tickets} tickets`);
-
-        if (blockingDependencies.length > 0) {
-            return NextResponse.json({
-                error: `Decommisison Blocked: Cannot delete department while it has active ${blockingDependencies.join(", ")}. Please reassign or remove these items first.`
-            }, { status: 400 });
         }
 
         // Dissociate users and clear HOD links
@@ -126,11 +103,31 @@ export async function DELETE(
             data: { hodId: null }
         });
 
+        // Auto-delete tickets and requests to clear constraints
+        await prisma.ticket.deleteMany({
+            where: { departmentId: id }
+        });
+
+        await prisma.request.deleteMany({
+            where: { departmentId: id }
+        });
+
+        // Delete all assets so they return to the allocation pool
+        await prisma.asset.deleteMany({
+            where: { departmentId: id }
+        });
+
+        // Delete all labs associated with the department
+        await prisma.lab.deleteMany({
+            where: { departmentId: id }
+        });
+
+        // Finally delete the department
         await prisma.department.delete({
             where: { id },
         });
 
-        return NextResponse.json({ message: "Department decommissioned successfully" });
+        return NextResponse.json({ message: "Department decommissioned successfully. Assets returned to allocation pool." });
     } catch (error: any) {
         console.error("Error deleting department:", error);
         return NextResponse.json({

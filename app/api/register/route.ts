@@ -115,7 +115,8 @@ export async function POST(req: Request) {
             action: "CREATE",
             entity: "USER",
             entityId: newUser.id,
-            details: `New account registered: ${name} (${email}) as ${targetRole}`
+            details: `New account registered: ${name} (${email}) as ${targetRole}`,
+            departmentId: finalDeptId || undefined
         });
 
         // Remove password from response

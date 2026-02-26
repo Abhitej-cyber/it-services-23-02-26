@@ -30,14 +30,18 @@ export function Header() {
                 const res = await fetch("/api/activities?limit=5");
                 if (res.ok) {
                     const data = await res.json();
-                    setActivities(data.slice(0, 5));
+                    if (Array.isArray(data)) {
+                        setActivities(data.slice(0, 5));
 
-                    // Simple unread logic based on local storage
-                    const lastSeen = localStorage.getItem("lastSeenActivity");
-                    if (data.length > 0) {
-                        if (!lastSeen || new Date(data[0].createdAt) > new Date(lastSeen)) {
-                            setHasUnread(true);
+                        // Simple unread logic based on local storage
+                        const lastSeen = localStorage.getItem("lastSeenActivity");
+                        if (data.length > 0) {
+                            if (!lastSeen || new Date(data[0].createdAt) > new Date(lastSeen)) {
+                                setHasUnread(true);
+                            }
                         }
+                    } else {
+                        setActivities([]);
                     }
                 }
             } catch (err) {

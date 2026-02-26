@@ -60,12 +60,27 @@ export async function GET(req: NextRequest) {
                 },
             });
         } else if (role === "HOD") {
-            // HOD sees only their requests
+            // HOD sees all requests for their department
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { departmentId: true },
+            });
+
+            if (!user?.departmentId) {
+                return NextResponse.json({ error: "No department assigned" }, { status: 400 });
+            }
+
             requests = await prisma.request.findMany({
-                where: { createdById: userId },
+                where: {
+                    departmentId: user.departmentId,
+                    type: { not: "ACCOUNT_APPROVAL" }
+                },
                 include: {
                     department: {
                         select: { name: true, code: true },
+                    },
+                    createdBy: {
+                        select: { name: true, email: true },
                     },
                     approvedBy: {
                         select: { name: true, email: true },
@@ -134,7 +149,8 @@ export async function POST(req: NextRequest) {
             action: "CREATE",
             entity: "REQUEST",
             entityId: request.id,
-            details: `Created resource request: ${request.title} (${request.requestNumber})`
+            details: `Created resource request: ${request.title} (${request.requestNumber})`,
+            departmentId: request.departmentId
         });
 
         return NextResponse.json(request, { status: 201 });

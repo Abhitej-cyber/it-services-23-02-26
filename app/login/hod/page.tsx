@@ -53,9 +53,9 @@ export default function HODLoginPage() {
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
             {/* Left Side - Branding */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-500 to-green-600 p-12 flex-col relative overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-500 to-emerald-600 p-12 flex-col relative overflow-hidden">
                 <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:60px_60px]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-green-600/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/50 to-transparent" />
 
                 <div className="relative z-10">
                     <button
@@ -96,7 +96,7 @@ export default function HODLoginPage() {
 
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-200 dark:border-slate-700">
                         <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl mb-4 shadow-lg">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl mb-4 shadow-lg">
                                 <Users className="h-8 w-8 text-white" />
                             </div>
                             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
@@ -183,7 +183,7 @@ export default function HODLoginPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
                             >
                                 {loading ? (
                                     <>

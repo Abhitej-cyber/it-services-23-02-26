@@ -50,6 +50,10 @@ model User {
   // Activity Logs
   activityLogs ActivityLog[]
 
+  // Inventory Relations
+  inventoryRequestsMade     InventoryRequest[] @relation("InventoryRequester")
+  inventoryRequestsApproved InventoryRequest[] @relation("InventoryApprover")
+
   @@index([email])
   @@index([role])
   @@index([departmentId])
@@ -392,3 +396,47 @@ model ActivityLog {
   @@index([labId])
   @@index([createdAt])
 }
+
+// ============================================
+// INVENTORY MANAGEMENT (ADMIN <-> DEAN)
+// ============================================
+
+model InventoryItem {
+  id           String             @id @default(uuid())
+  name         String             @unique
+  description  String?            @db.Text
+  quantity     Int                @default(0)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  requests     InventoryRequest[]
+}
+
+model InventoryRequest {
+  id              String                 @id @default(uuid())
+  requestNumber   String                 @unique
+  inventoryItemId String
+  quantity        Int                    @default(1)
+  status          InventoryRequestStatus @default(PENDING)
+  requestedById   String
+  approvedById    String?
+  remarks         String?                @db.Text
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  // Relations
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+  requestedBy   User          @relation("InventoryRequester", fields: [requestedById], references: [id])
+  approvedBy    User?         @relation("InventoryApprover", fields: [approvedById], references: [id])
+
+  @@index([requestedById])
+  @@index([approvedById])
+  @@index([inventoryItemId])
+}
+
+enum InventoryRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+

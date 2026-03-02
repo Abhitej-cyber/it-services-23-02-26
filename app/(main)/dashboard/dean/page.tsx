@@ -38,6 +38,8 @@ import {
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
+import { AddInventoryModal } from "@/components/inventory/AddInventoryModal";
+import { Package, Plus } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -49,11 +51,13 @@ export default function DeanDashboard() {
     const { data: distributionRaw } = useSWR("/api/analytics/distribution", fetcher, { revalidateOnFocus: false });
     const { data: adminsRaw } = useSWR("/api/users?role=ADMIN", fetcher, { revalidateOnFocus: false });
     const { data: hodsRaw, mutate: mutateHods } = useSWR("/api/users?role=HOD", fetcher);
+    const { data: inventoryRequestsRaw, mutate: mutateInventoryReqs } = useSWR("/api/inventory/requests", fetcher);
 
     const requests = Array.isArray(requestsRaw) ? requestsRaw : [];
     const distribution = Array.isArray(distributionRaw) ? distributionRaw : [];
     const admins = Array.isArray(adminsRaw) ? adminsRaw : [];
     const hods = Array.isArray(hodsRaw) ? hodsRaw : [];
+    const inventoryRequests = Array.isArray(inventoryRequestsRaw) ? inventoryRequestsRaw : [];
 
     const loading = loadingStats;
 
@@ -66,7 +70,8 @@ export default function DeanDashboard() {
     const [processingRequest, setProcessingRequest] = useState(false);
     const [remarks, setRemarks] = useState("");
     const [assignedAdminId, setAssignedAdminId] = useState("");
-    const [activeTab, setActiveTab] = useState<"SERVICE" | "ACCOUNT" | "HOD_DIRECTORY">("SERVICE");
+    const [activeTab, setActiveTab] = useState<"SERVICE" | "ACCOUNT" | "HOD_DIRECTORY" | "INVENTORY">("SERVICE");
+    const [isAddInventoryOpen, setIsAddInventoryOpen] = useState(false);
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
@@ -101,6 +106,28 @@ export default function DeanDashboard() {
             }
         } catch (error) {
             console.error("Failed to update request:", error);
+        } finally {
+            setProcessingRequest(false);
+        }
+    };
+
+    const handleInventoryAction = async (requestId: string, status: "APPROVED" | "DECLINED") => {
+        setProcessingRequest(true);
+        try {
+            const res = await fetch(`/api/inventory/requests/${requestId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status })
+            });
+
+            if (res.ok) {
+                await Promise.all([mutateInventoryReqs(), fetch("/api/inventory").then(res => res.json())]);
+            } else {
+                const err = await res.json();
+                alert(err.error || "Failed to process inventory request");
+            }
+        } catch (error) {
+            console.error("Inventory action failed:", error);
         } finally {
             setProcessingRequest(false);
         }
@@ -390,6 +417,20 @@ export default function DeanDashboard() {
                                                 {hods.length}
                                             </span>
                                         </button>
+                                        <button
+                                            onClick={() => setActiveTab("INVENTORY")}
+                                            className={cn(
+                                                "text-xs font-bold px-6 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2",
+                                                activeTab === "INVENTORY" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+                                            )}
+                                        >
+                                            Spare Parts
+                                            {inventoryRequests.filter(r => r.status === "PENDING").length > 0 && (
+                                                <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 rounded-md text-[10px] font-black">
+                                                    {inventoryRequests.filter(r => r.status === "PENDING").length}
+                                                </span>
+                                            )}
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 lg:w-72">
@@ -479,6 +520,79 @@ export default function DeanDashboard() {
                                             </div>
                                             <h4 className="text-xl font-bold text-slate-900 tracking-tight">Empty Directory</h4>
                                             <p className="text-sm text-slate-500 mt-2 font-medium max-w-sm">No HOD accounts are currently registered in the institutional system.</p>
+                                        </div>
+                                    )
+                                ) : activeTab === "INVENTORY" ? (
+                                    inventoryRequests.filter(r => showHistory ? true : r.status === "PENDING").length > 0 ? (
+                                        inventoryRequests.filter(r => showHistory ? true : r.status === "PENDING").map((req: any, index: number) => (
+                                            <div key={req.id} className="p-8 hover:bg-slate-50/80 transition-all group relative overflow-hidden">
+                                                <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 pl-2">
+                                                    <div className="flex items-start gap-6">
+                                                        <div className="mt-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg shadow-sm text-slate-600 font-black text-[10px] uppercase tracking-widest whitespace-nowrap">
+                                                            #{req.requestNumber.split('-')[2]}
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                                <span className="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                                                    SPARE PART REQUEST
+                                                                </span>
+                                                            </div>
+                                                            <h4 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors tracking-tight">
+                                                                {req.inventoryItem?.name} {req.quantity > 1 ? `x${req.quantity}` : ""}
+                                                            </h4>
+                                                            <p className="text-slate-500 text-sm mt-2 font-medium line-clamp-2 max-w-2xl leading-relaxed">{req.remarks || "No remarks provided"}</p>
+
+                                                            <div className="flex flex-wrap items-center gap-4 mt-5">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="h-8 w-8 bg-slate-100 border border-slate-200 rounded-full flex items-center justify-center font-bold text-xs text-slate-600">
+                                                                        {req.requestedBy?.name?.charAt(0) || "A"}
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs font-bold text-slate-900">{req.requestedBy?.name || "System Admin"}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="w-px h-8 bg-slate-200 hidden sm:block"></div>
+                                                                <div className="flex items-center gap-2 text-slate-400">
+                                                                    <Calendar className="w-4 h-4" />
+                                                                    <span className="text-[11px] font-semibold">{new Date(req.createdAt).toDateString()}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {req.status === "PENDING" ? (
+                                                        <div className="flex items-center gap-3 xl:shrink-0">
+                                                            <button
+                                                                onClick={() => handleInventoryAction(req.id, "DECLINED")}
+                                                                disabled={processingRequest}
+                                                                className="flex items-center gap-2 px-5 py-3 bg-white text-slate-500 border border-slate-200 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all disabled:opacity-50"
+                                                            >
+                                                                <XCircle className="w-4 h-4" /> Decline
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleInventoryAction(req.id, "APPROVED")}
+                                                                disabled={processingRequest}
+                                                                className="flex items-center gap-2 px-5 py-3 bg-indigo-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all disabled:opacity-50"
+                                                            >
+                                                                <CheckCircle2 className="w-4 h-4" /> Approve
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <span className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border shrink-0 ${req.status === "APPROVED" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-600 border-red-100"
+                                                            }`}>
+                                                            {req.status}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="p-24 flex flex-col items-center justify-center text-center">
+                                            <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 mb-6">
+                                                <Package className="h-10 w-10 text-slate-300" />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-slate-900 tracking-tight">No Spare Part Requests</h4>
+                                            <p className="text-sm text-slate-500 mt-2 font-medium max-w-sm">There are no pending inventory requests from system administrators.</p>
                                         </div>
                                     )
                                 ) : requests.filter(r => {
@@ -589,14 +703,14 @@ export default function DeanDashboard() {
                             </div>
                             <div className="space-y-3">
                                 {[
-                                    { label: "Manage Departments", desc: "Oversee academic sectors", icon: Building2, color: "text-blue-600", bg: "bg-blue-50 border-blue-100", href: "/departments" },
-                                    { label: "Allocate New Lab", desc: "Provision infrastructure", icon: Shield, color: "text-indigo-600", bg: "bg-indigo-50 border-indigo-100", href: "/labs" },
-                                    { label: "Audit Reports", desc: "System compliance", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-100", href: "/notifications" },
-                                    { label: "System Preferences", desc: "Platform settings", icon: GraduationCap, color: "text-slate-600", bg: "bg-slate-100 border-slate-200", href: "/settings" },
+                                    { label: "Manage Departments", desc: "Oversee academic sectors", icon: Building2, color: "text-blue-600", bg: "bg-blue-50 border-blue-100", href: "/departments", action: null },
+                                    { label: "Add Spare Part", desc: "Global inventory system", icon: Plus, color: "text-indigo-600", bg: "bg-indigo-50 border-indigo-100", href: "#", action: () => setIsAddInventoryOpen(true) },
+                                    { label: "Audit Reports", desc: "System compliance", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-100", href: "/notifications", action: null },
+                                    { label: "System Preferences", desc: "Platform settings", icon: GraduationCap, color: "text-slate-600", bg: "bg-slate-100 border-slate-200", href: "/settings", action: null },
                                 ].map((action, i) => (
                                     <button
                                         key={i}
-                                        onClick={() => router.push(action.href)}
+                                        onClick={() => action.action ? action.action() : router.push(action.href)}
                                         className="w-full flex items-center justify-between p-5 bg-white border border-slate-100 rounded-[24px] hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 group transition-all duration-300"
                                     >
                                         <div className="flex items-center gap-4">

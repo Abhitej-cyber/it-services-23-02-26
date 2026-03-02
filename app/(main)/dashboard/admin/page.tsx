@@ -21,6 +21,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Modal } from "@/components/ui/modal";
 import useSWR from "swr";
+import { RequestSparePartModal } from "@/components/inventory/RequestSparePartModal";
+import { Package } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -31,18 +33,21 @@ export default function AdminDashboard() {
     const { data: stats, isLoading: loadingStats } = useSWR("/api/stats", fetcher, { revalidateOnFocus: false });
     const { data: ticketsRaw, mutate: mutateTickets } = useSWR("/api/tickets", fetcher);
     const { data: requestsRaw, mutate: mutateRequests } = useSWR("/api/requests", fetcher);
+    const { data: inventoryRequestsRaw, mutate: mutateInventoryReqs } = useSWR("/api/inventory/requests", fetcher);
 
     const tickets = Array.isArray(ticketsRaw) ? ticketsRaw : [];
     const requests = Array.isArray(requestsRaw) ? requestsRaw : [];
+    const inventoryRequests = Array.isArray(inventoryRequestsRaw) ? inventoryRequestsRaw : [];
     const loading = loadingStats;
 
     const [search, setSearch] = useState("");
-    const [activeQueue, setActiveQueue] = useState<"TICKETS" | "REQUESTS">("TICKETS");
+    const [activeQueue, setActiveQueue] = useState<"TICKETS" | "REQUESTS" | "INVENTORY">("TICKETS");
     const [filterPriority, setFilterPriority] = useState<string>("ALL");
     const [selectedRequest, setSelectedRequest] = useState<any>(null);
     const [processingRequest, setProcessingRequest] = useState(false);
     const [requestRemarks, setRequestRemarks] = useState("");
     const [isProcessingModalOpen, setIsProcessingModalOpen] = useState(false);
+    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
     // Lab Creation Extra Fields (for LAB_SETUP type)
     const [labCode, setLabCode] = useState("");
@@ -174,13 +179,13 @@ export default function AdminDashboard() {
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-2.5 rounded-xl shadow-inner">
-                                <Calendar className="h-5 w-5 text-white" />
+                        <div className="flex items-center gap-4 bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-slate-200/50 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={() => setIsRequestModalOpen(true)}>
+                            <div className="bg-gradient-to-br from-indigo-500 to-blue-600 p-2.5 rounded-xl shadow-inner group-hover:scale-105 transition-transform">
+                                <Package className="h-5 w-5 text-white" />
                             </div>
                             <div className="pr-4">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Today</p>
-                                <p className="text-xs font-bold text-slate-800">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] mb-0.5">Inventory</p>
+                                <p className="text-sm font-bold text-slate-800">Request Spare Part</p>
                             </div>
                         </div>
                     </div>
@@ -308,6 +313,21 @@ export default function AdminDashboard() {
                                         )}
                                         {activeQueue === "REQUESTS" && <div className="absolute bottom-0 left-0 w-full h-1 bg-green-600 rounded-full" />}
                                     </button>
+                                    <button
+                                        onClick={() => setActiveQueue("INVENTORY")}
+                                        className={cn(
+                                            "text-xl font-bold transition-colors relative pb-1",
+                                            activeQueue === "INVENTORY" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+                                        )}
+                                    >
+                                        Spare Parts
+                                        {inventoryRequests.length > 0 && (
+                                            <span className="ml-2 px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded-md text-[10px] font-black">
+                                                {inventoryRequests.length}
+                                            </span>
+                                        )}
+                                        {activeQueue === "INVENTORY" && <div className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-full" />}
+                                    </button>
                                 </div>
                                 <Link href={activeQueue === "TICKETS" ? "/tickets" : "#"} className="text-sm font-medium text-green-600 hover:text-green-700">View All</Link>
                             </div>
@@ -360,7 +380,7 @@ export default function AdminDashboard() {
                                     )) : (
                                         <div className="p-10 text-center text-slate-500 italic">No requests in the queue</div>
                                     )
-                                ) : (
+                                ) : activeQueue === "REQUESTS" ? (
                                     filteredRequests.length > 0 ? filteredRequests.slice(0, 5).map((request, index) => (
                                         <div
                                             key={request.id}
@@ -410,6 +430,48 @@ export default function AdminDashboard() {
                                         </div>
                                     )) : (
                                         <div className="p-10 text-center text-slate-500 italic">No approved resource requests</div>
+                                    )
+                                ) : (
+                                    inventoryRequests.length > 0 ? inventoryRequests.map((request: any, index: number) => (
+                                        <div
+                                            key={request.id}
+                                            className="p-6 hover:bg-slate-50/50 transition-colors group"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex gap-4">
+                                                    <div className="text-[10px] font-black text-slate-300 w-4 mt-1.5">
+                                                        {String(index + 1).padStart(2, '0')}
+                                                    </div>
+                                                    <div className={`mt-1.5 h-3 w-3 rounded-full flex-shrink-0 bg-blue-500`} />
+                                                    <div>
+                                                        <h4 className="font-semibold text-slate-900 uppercase text-sm tracking-wide">
+                                                            {request.inventoryItem?.name} {request.quantity > 1 ? `x${request.quantity}` : ""}
+                                                        </h4>
+                                                        <p className="text-slate-500 text-sm mt-1">{request.remarks || "No remarks"}</p>
+                                                        <div className="flex items-center gap-2 mt-3">
+                                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-blue-50 text-blue-600 border border-blue-100">
+                                                                SPARE PART
+                                                            </span>
+                                                            <span className="text-slate-400 text-[10px]">•</span>
+                                                            <span className="text-slate-500 text-xs font-medium">Sent to Dean</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col items-end gap-2">
+                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${request.status === "APPROVED" ? "bg-green-100 text-green-700" :
+                                                        request.status === "DECLINED" ? "bg-red-100 text-red-700" :
+                                                            "bg-orange-100 text-orange-700"
+                                                        }`}>
+                                                        {request.status}
+                                                    </span>
+                                                    {request.status === "APPROVED" && (
+                                                        <p className="text-[10px] font-medium text-slate-500">Allocated</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )) : (
+                                        <div className="p-10 text-center text-slate-500 italic">No spare part requests made</div>
                                     )
                                 )}
                             </div>
@@ -538,6 +600,11 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </Modal>
+
+                <RequestSparePartModal
+                    isOpen={isRequestModalOpen}
+                    onClose={() => setIsRequestModalOpen(false)}
+                />
             </div>
         </div>
     );

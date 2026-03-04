@@ -71,7 +71,7 @@ export default function RoleSelectionPage() {
                         </svg>
                     </div>
                     <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent mb-4">
-                        Smart IT Asset Management
+                        IT Services Asset Management
                     </h1>
                     <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
                         Streamline your institution's IT infrastructure with intelligent asset tracking and service management

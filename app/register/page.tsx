@@ -52,7 +52,7 @@ export default function RegisterPage() {
                         Create an Account
                     </h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                        Join the Smart IT Asset Management System
+                        Join the IT Services Asset Management System
                     </p>
                 </div>
 

@@ -9,7 +9,7 @@ export default function Home() {
 
             <div className="z-10 text-center space-y-8">
                 <h1 className="text-6xl font-bold tracking-tight text-primary sm:text-7xl">
-                    Smart IT
+                    IT Services
                 </h1>
                 <p className="max-w-2xl text-lg text-muted-foreground mx-auto">
                     Advanced Asset & Service Management System for Modern Institutions.

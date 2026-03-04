@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export function Header() {
     const { data: session } = useSession();
@@ -23,6 +24,11 @@ export function Header() {
     const [hasUnread, setHasUnread] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const profileRef = useRef<HTMLDivElement>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const fetchActivities = async () => {
@@ -81,6 +87,8 @@ export function Header() {
     const accentColor = isDean ? "#1b4332" : "#10b981";
     const accentLight = isDean ? "#d8f3dc" : "#f0fdf4";
     const accentHighlight = isDean ? "#40916c" : "#34d399";
+
+    if (!mounted) return <header className="sticky top-0 z-30 h-24 bg-white/80 border-b border-slate-100" />;
 
     return (
         <header className="sticky top-0 z-30 h-24 bg-white/80 backdrop-blur-md border-b border-slate-100 px-10 flex items-center justify-between">
@@ -174,20 +182,31 @@ export function Header() {
 
                 {/* User Profile */}
                 <div className="flex items-center gap-3 pl-4 border-l border-slate-100 relative" ref={profileRef}>
-                    <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{session?.user?.name || "User"}</p>
-                        <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: accentColor }}>{session?.user?.role || "Member"}</p>
+                    <div className="flex items-center gap-4">
+                        <div className="text-right">
+                            <p className="text-[10px] font-black text-slate-900 uppercase tracking-tight">{session?.user?.name || "User"}</p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: accentColor }}>{session?.user?.role || "Member"}</p>
+                        </div>
+                        <div className="h-10 w-10 rounded-2xl bg-slate-900 shadow-lg shadow-slate-200 overflow-hidden flex items-center justify-center">
+                            {session?.user?.image ? (
+                                <img src={session.user.image} alt="User Avatar" className="h-full w-full object-cover" />
+                            ) : (
+                                <UserIcon className="h-5 w-5 text-white" />
+                            )}
+                        </div>
+                        <button
+                            onClick={() => {
+                                setShowProfileMenu(!showProfileMenu);
+                            }}
+                            className={cn(
+                                "h-10 w-10 rounded-2xl flex items-center justify-center transition-all",
+                                showProfileMenu ? "rotate-180 bg-green-600 text-white" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                            )}
+                            style={showProfileMenu ? { backgroundColor: accentColor } : {}}
+                        >
+                            <ChevronDown className="h-4 w-4" />
+                        </button>
                     </div>
-                    <button
-                        onClick={() => {
-                            setShowProfileMenu(!showProfileMenu);
-                        }}
-                        className={`h-10 w-10 rounded-2xl flex items-center justify-center transition-all ${showProfileMenu ? 'rotate-180' : 'bg-slate-900 shadow-lg shadow-slate-200'
-                            }`}
-                        style={showProfileMenu ? { backgroundColor: accentColor } : {}}
-                    >
-                        <ChevronDown className="h-4 w-4 text-white" />
-                    </button>
 
                     {showProfileMenu && (
                         <div className="absolute right-0 top-full mt-4 w-56 bg-white rounded-[24px] shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">

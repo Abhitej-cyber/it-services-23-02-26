@@ -47,10 +47,18 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = await params;
+        const id = (await params).id;
         const session = await getServerSession(authOptions);
-        if (!session || !["ADMIN", "DEAN"].includes(session.user.role)) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+        if (!session) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        // Allow update if target user is self OR if user is ADMIN/DEAN
+        const isSelf = session.user.id === id;
+        const isAdmin = ["ADMIN", "DEAN"].includes(session.user.role);
+
+        if (!isSelf && !isAdmin) {
+            return NextResponse.json({ error: "Forbidden: You can only update your own profile" }, { status: 403 });
         }
 
         const body = await req.json();
@@ -60,12 +68,32 @@ export async function PUT(
             updateData.password = await hash(password, 10);
         }
 
-        const user = await prisma.user.update({
-            where: { id },
-            data: updateData
-        });
+        let user;
+        try {
+            user = await prisma.user.update({
+                where: { id },
+                data: updateData as any
+            });
+        } catch (updateError) {
+            console.warn("Prisma update failed, attempting raw SQL fallback...");
+            const fields = Object.keys(updateData);
+            const setClause = fields.map((f, i) => `"${f}" = $${i + 2}`).join(", ");
+            const values = Object.values(updateData);
 
-        const { password: _, ...rest } = user;
+            await prisma.$executeRawUnsafe(
+                `UPDATE "User" SET ${setClause}, "updatedAt" = NOW() WHERE "id" = $1`,
+                id,
+                ...values
+            );
+
+            user = await prisma.user.findUnique({ where: { id } });
+        }
+
+        if (!user) {
+            return NextResponse.json({ error: "Failed to update user" }, { status: 500 });
+        }
+
+        const { password: _, ...rest } = user as any;
         return NextResponse.json(rest);
     } catch (error) {
         console.error("Error updating user:", error);

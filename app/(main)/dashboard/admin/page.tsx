@@ -196,7 +196,7 @@ export default function AdminDashboard() {
                             </div>
                             <div className="pr-4">
                                 <p className="text-[10px] font-black text-[#1b4332] uppercase tracking-[0.2em] mb-0.5">Inventory</p>
-                                <p className="text-xs font-black text-slate-900 uppercase tracking-tight">Request Spare Part</p>
+                                <p className="text-xs font-black text-slate-900 uppercase tracking-tight">Request Peripheral</p>
                             </div>
                         </div>
                     </div>
@@ -210,34 +210,20 @@ export default function AdminDashboard() {
                             value: stats?.totalSystems || 0,
                             change: "Inventory",
                             icon: Shield,
-<<<<<<< HEAD
-                            colors: "from-blue-600 hover:from-blue-500 to-indigo-700 hover:to-indigo-600",
-                            shadow: "shadow-blue-500/20",
-                            text: "text-white",
-                            href: "/assets"
-=======
                             colors: "from-[#1b4332] to-[#2d6a4f]",
                             shadow: "shadow-[#1b4332]/20",
-                            text: "text-[#b7e4c7]"
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
+                            text: "text-[#b7e4c7]",
+                            href: "/assets"
                         },
                         {
                             label: "Pending Tasks",
                             value: stats?.pendingTickets || 0,
                             change: "Awaiting",
                             icon: Clock,
-<<<<<<< HEAD
-                            colors: "from-white to-slate-50 border border-slate-200/60 hover:border-slate-300",
-                            shadow: "shadow-slate-200/40",
-                            text: "text-slate-900",
-                            iconColor: "text-orange-500",
-                            bgOverlay: "bg-orange-50",
-                            href: "/tickets"
-=======
                             colors: "from-[#2d6a4f] to-[#40916c]",
                             shadow: "shadow-[#2d6a4f]/20",
-                            text: "text-[#d8f3dc]"
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
+                            text: "text-[#d8f3dc]",
+                            href: "/tickets"
                         },
                         {
                             label: "In Process",
@@ -247,43 +233,27 @@ export default function AdminDashboard() {
                             colors: stats?.inProgressTickets > 0 ? "from-[#40916c] to-[#95d5b2]" : "from-white to-slate-50 border border-slate-200/60",
                             shadow: stats?.inProgressTickets > 0 ? "shadow-[#40916c]/20" : "shadow-slate-200/20",
                             text: stats?.inProgressTickets > 0 ? "text-white" : "text-slate-900",
-<<<<<<< HEAD
-                            iconColor: stats?.inProgressTickets > 0 ? "text-white" : "text-red-500",
-                            bgOverlay: stats?.inProgressTickets > 0 ? "bg-white/10" : "bg-red-50",
-                            href: "/tickets"
-=======
                             iconColor: stats?.inProgressTickets > 0 ? "text-white" : "text-[#2d6a4f]",
-                            bgOverlay: "bg-white/10"
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
+                            bgOverlay: "bg-white/10",
+                            href: "/tickets"
                         },
                         {
                             label: "Resolved Today",
                             value: stats?.completedToday || 0,
                             change: "Ready",
                             icon: CheckCircle2,
-<<<<<<< HEAD
-                            colors: "from-emerald-500 hover:from-emerald-400 to-teal-600 hover:to-teal-500",
-                            shadow: "shadow-emerald-500/20",
-                            text: "text-white",
-                            href: "/tickets"
-=======
                             colors: "from-[#1b4332] to-[#40916c]",
                             shadow: "shadow-[#1b4332]/20",
-                            text: "text-white"
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
+                            text: "text-white",
+                            href: "/tickets"
                         },
                     ].map((stat, i) => (
                         <motion.div
                             key={i}
-<<<<<<< HEAD
                             onClick={() => stat.href && router.push(stat.href)}
-                            className={cn(
-                                `bg-gradient-to-br ${stat.colors} p-6 rounded-3xl shadow-xl ${stat.shadow} relative group overflow-hidden transition-all duration-500 hover:-translate-y-1 ${stat.href ? 'cursor-pointer' : ''}`
-=======
                             whileHover={{ y: -5, scale: 1.02 }}
                             className={cn(
                                 `bg-gradient-to-br ${stat.colors} p-7 rounded-[32px] shadow-xl ${stat.shadow} relative group overflow-hidden transition-all duration-500 cursor-pointer`
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
                             )}
                         >
                             <div className={cn(
@@ -365,7 +335,7 @@ export default function AdminDashboard() {
                                             activeQueue === "INVENTORY" ? "text-[#1b4332]" : "text-slate-400 hover:text-[#2d6a4f]"
                                         )}
                                     >
-                                        Spare Parts
+                                        Peripherals
                                         {inventoryRequests.length > 0 && (
                                             <span className="ml-2 px-2 py-0.5 bg-[#d8f3dc] text-[#1b4332] rounded-lg text-[10px] font-black border border-[#b7e4c7]">
                                                 {inventoryRequests.length}
@@ -500,7 +470,7 @@ export default function AdminDashboard() {
                                                         )}
                                                         <div className="flex items-center gap-2 mt-3">
                                                             <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-green-50 text-green-600 border border-green-100">
-                                                                SPARE PART
+                                                                PERIPHERAL
                                                             </span>
                                                             <span className="text-slate-400 text-[10px]">•</span>
                                                             <span className="text-slate-500 text-xs font-medium">Sent to Dean</span>
@@ -521,7 +491,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
                                     )) : (
-                                        <div className="p-10 text-center text-slate-500 italic">No spare part requests made</div>
+                                        <div className="p-10 text-center text-slate-500 italic">No peripheral requests made</div>
                                     )
                                 )}
                             </div>
@@ -600,7 +570,7 @@ export default function AdminDashboard() {
                                     <h4 className="text-[10px] font-black uppercase text-red-600 tracking-widest">Laboratory Provisioning Details</h4>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
-                                            <label className="text-[9px] font-black uppercase text-slate-400">Lab Code</label>
+                                            <label className="text-[9px] font-black uppercase text-slate-400">Lab Code/Room</label>
                                             <input
                                                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-bold uppercase"
                                                 placeholder="e.g. CSE-101"

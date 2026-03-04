@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
     Plus,
+    FileUp,
     MapPin,
     Users,
     Monitor,
@@ -19,6 +20,7 @@ import {
     Trash2
 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
+import { ImportLabsModal } from "@/components/labs/ImportLabsModal";
 
 export default function LabsPage() {
     return (
@@ -45,6 +47,7 @@ function LabsContent() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [selectedLab, setSelectedLab] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -265,13 +268,22 @@ function LabsContent() {
                     <p className="text-slate-500 font-medium font-bold uppercase text-[10px] tracking-widest mt-1">Technically equipped workspaces & specialized monitoring</p>
                 </div>
                 {(session?.user?.role === "DEAN") && (
-                    <button
-                        onClick={() => setIsAddModalOpen(true)}
-                        className="flex items-center gap-3 px-8 py-4 bg-[#344e41] text-white font-black text-xs rounded-2xl hover:bg-[#3a5a40] shadow-xl shadow-[#344e41]/20 transition-all uppercase tracking-widest"
-                    >
-                        <Plus className="h-5 w-5" />
-                        Create New Lab Space
-                    </button>
+                    <div className="flex flex-wrap gap-4">
+                        <button
+                            onClick={() => setIsImportModalOpen(true)}
+                            className="flex items-center gap-3 px-8 py-4 bg-white border-2 border-[#344e41] text-[#344e41] font-black text-xs rounded-2xl hover:bg-[#344e41] hover:text-white shadow-xl shadow-[#344e41]/5 transition-all uppercase tracking-widest"
+                        >
+                            <FileUp className="h-5 w-5" />
+                            Import from Excel
+                        </button>
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="flex items-center gap-3 px-8 py-4 bg-[#344e41] text-white font-black text-xs rounded-2xl hover:bg-[#3a5a40] shadow-xl shadow-[#344e41]/20 transition-all uppercase tracking-widest"
+                        >
+                            <Plus className="h-5 w-5" />
+                            Create New Lab Space
+                        </button>
+                    </div>
                 )}
                 {session?.user?.role === "HOD" && (
                     <button
@@ -440,7 +452,7 @@ function LabsContent() {
                             <input name="name" required className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3a5a40]" placeholder="e.g. Advanced AI Lab" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Lab Code</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Lab Code/Room</label>
                             <input name="code" required className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#3a5a40]" placeholder="e.g. CSE-601" />
                         </div>
                     </div>
@@ -528,7 +540,7 @@ function LabsContent() {
                             <input name="name" defaultValue={selectedLab?.name} required className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#0077b6]" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Lab Code</label>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Lab Code/Room</label>
                             <input name="code" defaultValue={selectedLab?.code} required className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-[#0077b6]" />
                         </div>
                     </div>
@@ -696,6 +708,12 @@ function LabsContent() {
                     </button>
                 </form>
             </Modal>
+
+            <ImportLabsModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onSuccess={fetchLabs}
+            />
         </div>
     );
 }

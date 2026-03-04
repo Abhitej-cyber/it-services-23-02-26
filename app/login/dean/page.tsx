@@ -225,18 +225,7 @@ export default function DeanLoginPage() {
                             </button>
                         </form>
 
-                        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-                            <p className="text-xs font-black uppercase tracking-widest text-slate-400">
-                                New Dean Authority?
-                                <button
-                                    type="button"
-                                    onClick={() => router.push("/register/dean")}
-                                    className="ml-2 text-green-600 hover:text-green-700 font-black hover:underline transition-colors"
-                                >
-                                    Register for Acceptance
-                                </button>
-                            </p>
-                        </div>
+
                     </motion.div>
                 </div>
             </div>

@@ -287,49 +287,22 @@ export default function DeanDashboard() {
                             value: stats?.totalSystems || 0,
                             change: "Live Tracking",
                             icon: Monitor,
-<<<<<<< HEAD
-                            colors: "from-blue-600 hover:from-blue-500 to-indigo-700 hover:to-indigo-600",
-                            shadow: "shadow-blue-500/20",
-                            text: "text-white",
-                            subtext: stats?.lastSync ? `Updated ${new Date(stats.lastSync).toLocaleTimeString()}` : "Fetching...",
-                            href: "/assets"
-=======
                             colors: "from-[#1b4332] to-[#2d6a4f]",
                             glow: "shadow-green-900/40",
                             accent: "bg-white/10",
-                            text: "text-green-50"
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
+                            text: "text-green-50",
+                            href: "/assets"
                         },
                         {
                             label: "System Health",
                             value: stats?.readyForUse || 0,
                             change: "Optimal Condition",
                             icon: CheckCircle2,
-<<<<<<< HEAD
-                            colors: "from-emerald-500 hover:from-emerald-400 to-teal-600 hover:to-teal-500",
-                            shadow: "shadow-emerald-500/20",
-                            text: "text-white",
-                            href: "/assets"
-                        },
-                        {
-                            label: "Service Pipeline",
-                            value: stats?.service || 0,
-                            change: "Maintenance",
-                            icon: Wrench,
-                            colors: "from-white to-slate-50 border border-slate-200/60 hover:border-slate-300",
-                            shadow: "shadow-slate-200/40",
-                            text: "text-slate-900",
-                            iconColor: "text-orange-500",
-                            bgOverlay: "bg-orange-50",
-                            href: "/tickets"
-                        },
-                        {
-                            label: "Priority Actions",
-=======
                             colors: "from-[#2d6a4f] to-[#40916c]",
                             glow: "shadow-green-700/30",
                             accent: "bg-white/10",
-                            text: "text-green-50"
+                            text: "text-green-50",
+                            href: "/assets"
                         },
                         {
                             label: "Service Ops",
@@ -339,45 +312,34 @@ export default function DeanDashboard() {
                             colors: "from-[#40916c] to-[#95d5b2]",
                             glow: "shadow-green-500/30",
                             accent: "bg-[#1b4332]/10",
-                            text: "text-white"
+                            text: "text-white",
+                            href: "/tickets"
                         },
                         {
                             label: "Alert Status",
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
                             value: stats?.priorityTasks || 0,
                             change: stats?.priorityTasks > 0 ? "Urgent Action" : "No Conflicts",
                             icon: Flame,
-<<<<<<< HEAD
-                            colors: stats?.priorityTasks > 0 ? "from-red-500 hover:from-red-400 to-rose-600 hover:to-rose-500" : "from-white to-slate-50 border border-slate-200/60 hover:border-slate-300",
-                            shadow: stats?.priorityTasks > 0 ? "shadow-red-500/20" : "shadow-slate-200/40",
-                            text: stats?.priorityTasks > 0 ? "text-white" : "text-slate-900",
-                            iconColor: stats?.priorityTasks > 0 ? "text-white" : "text-slate-400",
-                            bgOverlay: stats?.priorityTasks > 0 ? "bg-white/10" : "bg-slate-100",
-                            href: "/tickets"
-=======
                             colors: stats?.priorityTasks > 0 ? "from-[#1b4332] to-[#40916c]" : "from-[#d8f3dc] to-[#b7e4c7]",
                             glow: stats?.priorityTasks > 0 ? "shadow-green-900/40" : "shadow-green-100/30",
                             accent: "bg-white/20",
-                            text: stats?.priorityTasks > 0 ? "text-white" : "text-[#1b4332]"
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
+                            text: stats?.priorityTasks > 0 ? "text-white" : "text-[#1b4332]",
+                            href: "/tickets"
                         },
                     ].map((kpi, i) => (
                         <motion.div
                             key={i}
-<<<<<<< HEAD
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            whileHover={{ y: -10, scale: 1.02 }}
                             onClick={() => {
-                                if (kpi.label === "Priority Actions") {
+                                if (kpi.label === "Alert Status" || kpi.label === "Priority Actions") {
                                     document.getElementById('institutional-queue')?.scrollIntoView({ behavior: 'smooth' });
                                 } else if (kpi.href) {
                                     router.push(kpi.href);
                                 }
                             }}
-=======
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            whileHover={{ y: -10, scale: 1.02 }}
->>>>>>> b7d3d7ba2a9a5b93c88f6353bcebd75af91816ff
                             className={cn(
                                 `relative group bg-gradient-to-br ${kpi.colors} p-8 rounded-[40px] shadow-2xl ${kpi.glow} overflow-hidden cursor-pointer`
                             )}
@@ -500,7 +462,7 @@ export default function DeanDashboard() {
                                             { id: "SERVICE", label: "Operations" },
                                             { id: "ACCOUNT", label: "Accounts", count: requests.filter(r => r.type === "ACCOUNT_APPROVAL" && r.status === "PENDING").length, color: "bg-green-800" },
                                             { id: "HOD_DIRECTORY", label: "Directory", count: hods.length, color: "bg-green-700" },
-                                            { id: "INVENTORY", label: "Spares", count: inventoryRequests.filter(r => r.status === "PENDING").length, color: "bg-emerald-600" },
+                                            { id: "INVENTORY", label: "Peripherals", count: inventoryRequests.filter(r => r.status === "PENDING").length, color: "bg-emerald-600" },
                                         ].map((tab) => (
                                             <button
                                                 key={tab.id}
@@ -587,8 +549,12 @@ export default function DeanDashboard() {
                                                         <div className="text-xs font-black text-green-200 tabular-nums">
                                                             {String(index + 1).padStart(2, '0')}
                                                         </div>
-                                                        <div className="h-16 w-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-[28px] flex items-center justify-center font-black text-white text-2xl shadow-lg shadow-green-500/20 group-hover:rotate-6 transition-transform">
-                                                            {hod.name.charAt(0)}
+                                                        <div className="h-16 w-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-[28px] flex items-center justify-center font-black text-white text-2xl shadow-lg shadow-green-500/20 group-hover:rotate-6 transition-transform overflow-hidden">
+                                                            {hod.image ? (
+                                                                <img src={hod.image} alt={hod.name} className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                hod.name.charAt(0)
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <h4 className="text-xl font-black text-slate-900 group-hover:text-green-600 transition-colors tracking-tight">{hod.name}</h4>
@@ -655,8 +621,12 @@ export default function DeanDashboard() {
 
                                                             <div className="flex flex-wrap items-center gap-6 pt-2">
                                                                 <div className="flex items-center gap-4">
-                                                                    <div className="h-10 w-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md">
-                                                                        {req.requestedBy?.name?.charAt(0) || "S"}
+                                                                    <div className="h-10 w-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md overflow-hidden">
+                                                                        {req.requestedBy?.image ? (
+                                                                            <img src={req.requestedBy.image} alt={req.requestedBy.name} className="h-full w-full object-cover" />
+                                                                        ) : (
+                                                                            req.requestedBy?.name?.charAt(0) || "S"
+                                                                        )}
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-xs font-black text-slate-900">{req.requestedBy?.name || "System Controller"}</p>
@@ -750,8 +720,12 @@ export default function DeanDashboard() {
 
                                                         <div className="flex flex-wrap items-center gap-6 pt-2">
                                                             <div className="flex items-center gap-4">
-                                                                <div className="h-10 w-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md">
-                                                                    {req.createdBy.name.charAt(0)}
+                                                                <div className="h-10 w-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md overflow-hidden">
+                                                                    {req.createdBy.image ? (
+                                                                        <img src={req.createdBy.image} alt={req.createdBy.name} className="h-full w-full object-cover" />
+                                                                    ) : (
+                                                                        req.createdBy.name.charAt(0)
+                                                                    )}
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-xs font-black text-slate-900">{req.createdBy.name}</p>

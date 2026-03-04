@@ -59,7 +59,8 @@ export const authOptions: NextAuthOptions = {
                     role: user.role,
                     status: user.status,
                     departmentId: user.departmentId,
-                    labId: user.labId
+                    labId: user.labId,
+                    image: (user as any).image
                 };
             },
         }),
@@ -70,18 +71,30 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id;
                 session.user.name = token.name;
                 session.user.email = token.email;
-                session.user.role = token.role;
-                session.user.departmentId = token.departmentId;
-                session.user.labId = token.labId;
+                session.user.role = token.role as string;
+                session.user.departmentId = token.departmentId as string;
+                session.user.labId = token.labId as string;
+                session.user.image = token.image as string;
             }
             return session;
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
                 token.role = (user as any).role;
                 token.departmentId = (user as any).departmentId;
                 token.labId = (user as any).labId;
+                // Store a URL instead of potentially massive base64
+                const dbImage = (user as any).image;
+                token.image = dbImage ? `/api/users/${user.id}/image?v=${Date.now()}` : null;
+            }
+            if (trigger === "update" && session) {
+                if (session.name) token.name = session.name;
+                if (session.email) token.email = session.email;
+                if (session.image !== undefined) {
+                    // Force cache bust on update if a new image exists
+                    token.image = session.image ? `/api/users/${token.id}/image?v=${Date.now()}` : null;
+                }
             }
             return token;
         },

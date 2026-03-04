@@ -462,7 +462,7 @@ export default function DeanDashboard() {
                                             { id: "SERVICE", label: "Operations" },
                                             { id: "ACCOUNT", label: "Accounts", count: requests.filter(r => r.type === "ACCOUNT_APPROVAL" && r.status === "PENDING").length, color: "bg-green-800" },
                                             { id: "HOD_DIRECTORY", label: "Directory", count: hods.length, color: "bg-green-700" },
-                                            { id: "INVENTORY", label: "Spares", count: inventoryRequests.filter(r => r.status === "PENDING").length, color: "bg-emerald-600" },
+                                            { id: "INVENTORY", label: "Peripherals", count: inventoryRequests.filter(r => r.status === "PENDING").length, color: "bg-emerald-600" },
                                         ].map((tab) => (
                                             <button
                                                 key={tab.id}
@@ -549,8 +549,12 @@ export default function DeanDashboard() {
                                                         <div className="text-xs font-black text-teal-200 tabular-nums">
                                                             {String(index + 1).padStart(2, '0')}
                                                         </div>
-                                                        <div className="h-16 w-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-[28px] flex items-center justify-center font-black text-white text-2xl shadow-lg shadow-green-500/20 group-hover:rotate-6 transition-transform">
-                                                            {hod.name.charAt(0)}
+                                                        <div className="h-16 w-16 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-[28px] flex items-center justify-center font-black text-white text-2xl shadow-lg shadow-teal-500/20 group-hover:rotate-6 transition-transform overflow-hidden">
+                                                            {hod.image ? (
+                                                                <img src={hod.image} alt={hod.name} className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                hod.name.charAt(0)
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <h4 className="text-xl font-black text-slate-900 group-hover:text-teal-600 transition-colors tracking-tight">{hod.name}</h4>
@@ -617,8 +621,12 @@ export default function DeanDashboard() {
 
                                                             <div className="flex flex-wrap items-center gap-6 pt-2">
                                                                 <div className="flex items-center gap-4">
-                                                                    <div className="h-10 w-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md">
-                                                                        {req.requestedBy?.name?.charAt(0) || "S"}
+                                                                    <div className="h-10 w-10 bg-gradient-to-br from-teal-600 to-cyan-700 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md overflow-hidden">
+                                                                        {req.requestedBy?.image ? (
+                                                                            <img src={req.requestedBy.image} alt={req.requestedBy.name} className="h-full w-full object-cover" />
+                                                                        ) : (
+                                                                            req.requestedBy?.name?.charAt(0) || "S"
+                                                                        )}
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-xs font-black text-slate-900">{req.requestedBy?.name || "System Controller"}</p>
@@ -632,31 +640,33 @@ export default function DeanDashboard() {
                                                         </div>
                                                     </div>
 
-                                                    {req.status === "PENDING" ? (
-                                                        <div className="flex items-center gap-4 xl:shrink-0">
-                                                            <button
-                                                                onClick={() => handleInventoryAction(req.id, "DECLINED")}
-                                                                disabled={processingRequest}
-                                                                className="flex items-center gap-3 px-8 py-4 bg-white text-slate-400 border border-slate-100 font-black text-[11px] uppercase tracking-widest rounded-3xl hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all disabled:opacity-50"
-                                                            >
-                                                                <XCircle className="w-5 h-5" /> Reject
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleInventoryAction(req.id, "APPROVED")}
-                                                                disabled={processingRequest}
-                                                                className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-black text-[11px] uppercase tracking-widest rounded-3xl hover:shadow-xl hover:shadow-teal-500/20 transition-all disabled:opacity-50"
-                                                            >
-                                                                <CheckCircle2 className="w-5 h-5" /> Grant
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <span className={cn(
-                                                            "px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border shrink-0",
-                                                            req.status === "APPROVED" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
-                                                        )}>
-                                                            {req.status}
-                                                        </span>
-                                                    )}
+                                                    {
+                                                        req.status === "PENDING" ? (
+                                                            <div className="flex items-center gap-4 xl:shrink-0">
+                                                                <button
+                                                                    onClick={() => handleInventoryAction(req.id, "DECLINED")}
+                                                                    disabled={processingRequest}
+                                                                    className="flex items-center gap-3 px-8 py-4 bg-white text-slate-400 border border-slate-100 font-black text-[11px] uppercase tracking-widest rounded-3xl hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all disabled:opacity-50"
+                                                                >
+                                                                    <XCircle className="w-5 h-5" /> Reject
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleInventoryAction(req.id, "APPROVED")}
+                                                                    disabled={processingRequest}
+                                                                    className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-black text-[11px] uppercase tracking-widest rounded-3xl hover:shadow-xl hover:shadow-teal-500/20 transition-all disabled:opacity-50"
+                                                                >
+                                                                    <CheckCircle2 className="w-5 h-5" /> Grant
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <span className={cn(
+                                                                "px-6 py-3 rounded-full text-[11px] font-black uppercase tracking-[0.2em] border shrink-0",
+                                                                req.status === "APPROVED" ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-rose-50 text-rose-600 border-rose-100"
+                                                            )}>
+                                                                {req.status}
+                                                            </span>
+                                                        )
+                                                    }
                                                 </div>
                                             </div>
                                         ))
@@ -712,8 +722,12 @@ export default function DeanDashboard() {
 
                                                         <div className="flex flex-wrap items-center gap-6 pt-2">
                                                             <div className="flex items-center gap-4">
-                                                                <div className="h-10 w-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md">
-                                                                    {req.createdBy.name.charAt(0)}
+                                                                <div className="h-10 w-10 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-2xl flex items-center justify-center font-black text-white text-sm shadow-md overflow-hidden">
+                                                                    {req.createdBy.image ? (
+                                                                        <img src={req.createdBy.image} alt={req.createdBy.name} className="h-full w-full object-cover" />
+                                                                    ) : (
+                                                                        req.createdBy.name.charAt(0)
+                                                                    )}
                                                                 </div>
                                                                 <div>
                                                                     <p className="text-xs font-black text-slate-900">{req.createdBy.name}</p>
@@ -749,7 +763,8 @@ export default function DeanDashboard() {
                                         <h4 className="text-2xl font-black text-slate-900 tracking-tight">System Optimized</h4>
                                         <p className="text-sm text-slate-500 mt-3 font-bold">The executive flow is completely clear. No action needed.</p>
                                     </div>
-                                )}
+                                )
+                                }
                             </div>
 
                             <div className="p-8 bg-teal-50/30 text-center border-t border-teal-50">

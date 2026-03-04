@@ -35,7 +35,7 @@ export function Sidebar() {
         { name: "Departments", href: "/departments", icon: Building2 },
         { name: "Labs", href: "/labs", icon: Server },
         { name: "Assets", href: "/assets", icon: Monitor },
-        { name: "Allocate Systems", href: "/allocate", icon: Layers, deanOnly: true },
+        { name: "Allocate Systems", href: "/assets", icon: Layers, deanOnly: true },
         { name: "Requests", href: "/tickets", icon: Wrench },
         { name: "Users", href: "/users", icon: User },
         { name: "History", href: "/notifications", icon: Activity },

@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 export async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!session) return NextResponse.json([], { status: 200 }); // Return empty array if not logged in
 
         const limit = parseInt(new URL(req.url).searchParams.get("limit") || "50");
         const role = session.user.role;

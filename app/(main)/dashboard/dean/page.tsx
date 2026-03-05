@@ -203,11 +203,7 @@ export default function DeanDashboard() {
     }
 
     return (
-<<<<<<< HEAD
         <div className="relative min-h-screen bg-[#fafafa] p-6 lg:p-10 space-y-10 selection:bg-teal-500/30 overflow-hidden text-slate-900 font-sans">
-=======
-        <div className="relative min-h-screen bg-[#fafafa] p-6 lg:p-10 space-y-10 selection:bg-blue-500/30 overflow-hidden text-slate-900 font-sans">
->>>>>>> 9073626 (5/3/26)
             {/* Deep Sea Matrix Mesh Background */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#fafafa]">
                 <motion.div
@@ -244,7 +240,6 @@ export default function DeanDashboard() {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-<<<<<<< HEAD
                             className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-teal-100 shadow-sm mb-2"
                         >
                             <div className="w-2 h-2 rounded-full bg-teal-600 animate-ping" />
@@ -258,21 +253,6 @@ export default function DeanDashboard() {
                                     animate={{ width: ["0%", "100%", "0%"] }}
                                     transition={{ duration: 3, repeat: Infinity }}
                                     className="absolute -bottom-2 left-0 h-1.5 bg-gradient-to-r from-[#0e9e8e] to-[#38bdf8] rounded-full opacity-30"
-=======
-                            className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-white/60 backdrop-blur-md border border-blue-100 shadow-sm mb-2"
-                        >
-                            <div className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
-                            <span className="text-[11px] font-black text-blue-800 uppercase tracking-[0.2em]">Vignan Institute of Technology and Science</span>
-                        </motion.div>
-                        <h1 className="text-5xl lg:text-7xl font-black tracking-tight flex flex-col sm:flex-row sm:items-baseline gap-x-4">
-                            <span className="text-[#1e40af]">Asset</span>
-                            <span className="relative">
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] via-[#10b981] to-[#4ade80] animate-gradient-x">Intelligence</span>
-                                <motion.div
-                                    animate={{ width: ["0%", "100%", "0%"] }}
-                                    transition={{ duration: 3, repeat: Infinity }}
-                                    className="absolute -bottom-2 left-0 h-1.5 bg-gradient-to-r from-[#3b82f6] to-[#10b981] rounded-full opacity-30"
->>>>>>> 9073626 (5/3/26)
                                 />
                             </span>
                         </h1>
@@ -287,13 +267,8 @@ export default function DeanDashboard() {
                         whileHover={{ y: -5, scale: 1.02 }}
                         className="flex items-center gap-5 bg-white/70 backdrop-blur-xl p-5 rounded-[32px] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)]"
                     >
-<<<<<<< HEAD
                         <div className="bg-gradient-to-br from-teal-700 to-cyan-600 p-4 rounded-2xl shadow-lg shadow-teal-900/20">
                             <Calendar className="h-6 w-6 text-cyan-50" />
-=======
-                        <div className="bg-gradient-to-br from-blue-600 to-green-500 p-4 rounded-2xl shadow-lg shadow-blue-900/10">
-                            <Calendar className="h-6 w-6 text-white" />
->>>>>>> 9073626 (5/3/26)
                         </div>
                         <div className="pr-4">
                             <p className="text-[10px] font-black text-teal-700 uppercase tracking-[0.2em] mb-1">System Timeline</p>
@@ -312,17 +287,10 @@ export default function DeanDashboard() {
                             value: stats?.totalSystems || 0,
                             change: "Live Tracking",
                             icon: Monitor,
-<<<<<<< HEAD
                             colors: "from-[#0d3b5e] to-[#1e6b8a]",
                             glow: "shadow-blue-900/40",
                             accent: "bg-white/10",
                             text: "text-cyan-50",
-=======
-                            colors: "from-[#3b82f6] to-[#2563eb]",
-                            glow: "shadow-blue-900/20",
-                            accent: "bg-white/10",
-                            text: "text-blue-50",
->>>>>>> 9073626 (5/3/26)
                             href: "/assets"
                         },
                         {
@@ -330,17 +298,10 @@ export default function DeanDashboard() {
                             value: stats?.readyForUse || 0,
                             change: "Optimal Condition",
                             icon: CheckCircle2,
-<<<<<<< HEAD
                             colors: "from-[#1e6b8a] to-[#0e9e8e]",
                             glow: "shadow-teal-700/30",
                             accent: "bg-white/10",
                             text: "text-cyan-50",
-=======
-                            colors: "from-[#2563eb] to-[#10b981]",
-                            glow: "shadow-blue-700/20",
-                            accent: "bg-white/10",
-                            text: "text-blue-50",
->>>>>>> 9073626 (5/3/26)
                             href: "/assets"
                         },
                         {
@@ -348,15 +309,9 @@ export default function DeanDashboard() {
                             value: stats?.service || 0,
                             change: "Active Pipeline",
                             icon: Wrench,
-<<<<<<< HEAD
                             colors: "from-[#0e9e8e] to-[#67e8f9]",
                             glow: "shadow-teal-500/30",
                             accent: "bg-[#0d3b5e]/10",
-=======
-                            colors: "from-[#10b981] to-[#3b82f6]",
-                            glow: "shadow-green-500/20",
-                            accent: "bg-[#1e3a8a]/10",
->>>>>>> 9073626 (5/3/26)
                             text: "text-white",
                             href: "/tickets"
                         },
@@ -365,17 +320,10 @@ export default function DeanDashboard() {
                             value: stats?.priorityTasks || 0,
                             change: stats?.priorityTasks > 0 ? "Urgent Action" : "No Conflicts",
                             icon: Flame,
-<<<<<<< HEAD
                             colors: stats?.priorityTasks > 0 ? "from-[#0d3b5e] to-[#0e9e8e]" : "from-[#cffafe] to-[#a5f3fc]",
                             glow: stats?.priorityTasks > 0 ? "shadow-blue-900/40" : "shadow-cyan-100/30",
                             accent: "bg-white/20",
                             text: stats?.priorityTasks > 0 ? "text-white" : "text-[#0d3b5e]",
-=======
-                            colors: stats?.priorityTasks > 0 ? "from-[#3b82f6] to-[#10b981]" : "from-[#dbeafe] to-[#f0fdf4]",
-                            glow: stats?.priorityTasks > 0 ? "shadow-blue-900/20" : "shadow-blue-100/10",
-                            accent: "bg-white/20",
-                            text: stats?.priorityTasks > 0 ? "text-white" : "text-[#1e40af]",
->>>>>>> 9073626 (5/3/26)
                             href: "/tickets"
                         },
                     ].map((kpi, i) => (
@@ -458,13 +406,8 @@ export default function DeanDashboard() {
                                     <BarChart data={distribution} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-<<<<<<< HEAD
                                                 <stop offset="5%" stopColor="#0d3b5e" stopOpacity={1} />
                                                 <stop offset="95%" stopColor="#0e9e8e" stopOpacity={0.8} />
-=======
-                                                <stop offset="5%" stopColor="#3b82f6" stopOpacity={1} />
-                                                <stop offset="95%" stopColor="#10b981" stopOpacity={0.8} />
->>>>>>> 9073626 (5/3/26)
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" strokeOpacity={0.5} />
@@ -508,17 +451,10 @@ export default function DeanDashboard() {
                             <div className="p-8 lg:p-12 border-b border-[#caf0f8]/40 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
                                 <div className="space-y-8 flex-1">
                                     <div className="flex items-center gap-4">
-<<<<<<< HEAD
                                         <div className="p-3 bg-gradient-to-br from-teal-700 to-cyan-600 rounded-2xl shadow-lg shadow-teal-900/20">
                                             <Zap className="h-6 w-6 text-cyan-50" />
                                         </div>
                                         <h2 className="text-3xl font-black text-teal-900 tracking-tight">Signal Flow Queue</h2>
-=======
-                                        <div className="p-3 bg-gradient-to-br from-blue-600 to-green-500 rounded-2xl shadow-lg shadow-blue-900/10">
-                                            <Zap className="h-6 w-6 text-emerald-50" />
-                                        </div>
-                                        <h2 className="text-3xl font-black text-blue-900 tracking-tight">Signal Flow Queue</h2>
->>>>>>> 9073626 (5/3/26)
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2 bg-cyan-50/40 p-2 rounded-[24px] w-fit border border-cyan-100/40">
@@ -808,21 +744,13 @@ export default function DeanDashboard() {
 
                                                 <button
                                                     onClick={() => setSelectedRequest(req)}
-<<<<<<< HEAD
                                                     className="flex items-center justify-center gap-4 px-10 py-5 bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest rounded-3xl hover:bg-teal-600 hover:shadow-2xl hover:shadow-teal-500/20 transition-all xl:shrink-0 w-full xl:w-auto overflow-hidden group/btn relative"
-=======
-                                                    className="flex items-center justify-center gap-4 px-10 py-5 bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest rounded-3xl hover:bg-blue-600 hover:shadow-2xl hover:shadow-blue-500/20 transition-all xl:shrink-0 w-full xl:w-auto overflow-hidden group/btn relative"
->>>>>>> 9073626 (5/3/26)
                                                 >
                                                     <span className="relative z-10 flex items-center gap-3">
                                                         Review Pulse
                                                         <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-2 transition-transform" />
                                                     </span>
-<<<<<<< HEAD
                                                     <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-cyan-600 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
-=======
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-green-600 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
->>>>>>> 9073626 (5/3/26)
                                                 </button>
                                             </div>
                                         </div>

@@ -1,0 +1,23 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#2d6a4f" stroke="#1a4a32" stroke-width="10"/>
+
+  <!-- Inner design elements -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="white" stroke-width="3"/>
+
+  <!-- Vignan text arc -->
+  <path id="textcircle" d="M 100,100 m -60,0 a 60,60 0 1,1 120,0 a 60,60 0 1,1 -120,0" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">
+    <textPath href="#textcircle" startOffset="25%">VIGNAN INSTITUTE</textPath>
+  </text>
+
+  <!-- Center emblem -->
+  <circle cx="100" cy="100" r="25" fill="white"/>
+  <text x="100" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2d6a4f">V</text>
+
+  <!-- Corner accent -->
+  <rect x="15" y="15" width="20" height="20" fill="white" rx="2"/>
+  <rect x="165" y="15" width="20" height="20" fill="white" rx="2"/>
+  <rect x="15" y="165" width="20" height="20" fill="white" rx="2"/>
+  <rect x="165" y="165" width="20" height="20" fill="white" rx="2"/>
+</svg>

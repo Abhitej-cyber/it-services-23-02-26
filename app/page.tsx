@@ -20,7 +20,7 @@ export default function Home() {
             <header className="fixed top-0 left-0 w-full h-28 z-50 flex items-center justify-center bg-white/40 backdrop-blur-md border-b border-[#2d6a4f]/5 px-8">
                 <Branding
                     text="VIGNAN INSTITUTE OF TECHNOLOGY AND SCIENCE"
-                    image="/vignan-logo-final.svg"
+                    image="/vignan-logo-new.png"
                     size="lg"
                     className="scale-90 md:scale-100"
                 />

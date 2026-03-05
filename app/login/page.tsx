@@ -67,7 +67,7 @@ export default function RoleSelectionPage() {
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center justify-center w-24 h-24 bg-white/90 backdrop-blur-sm rounded-3xl mb-6 shadow-2xl border border-white/20 p-3 hover:scale-105 transition-transform duration-300">
                         <img
-                            src="/vignan-logo-final.svg"
+                            src="/vignan-logo-new.png"
                             alt="Vignan Logo"
                             className="w-full h-full object-contain drop-shadow-md"
                         />
